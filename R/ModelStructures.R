@@ -23,7 +23,7 @@ glm_to_compint <- function(model) {
       )),
     inference = "frequentist",
     pseudo_posterior = list(
-      args = list(coefs=coef(model),vcov=(model)),
+      args = list(coefs=coef(model),vcov=vcov(model)),
       fun = function(object,ndraws,...){
         MASS::mvrnorm(n = ndraws, mu=object[["pseudo_posterior"]][["args"]][["coefs"]],
                       object[["pseudo_posterior"]][["args"]][["vcov"]],...)
@@ -83,17 +83,23 @@ logistf_to_compint <- function(model, data) {
 
 
 regs <- function(object) {
-  if (inherits(object, "CompInt_model")) {
+  if(inherits(object, "CompInt_model")) {
     return(unlist(object$model_specification$regs))
   } else {
-    stop("Input object is not of the expected class (CompInt model).")
+    stop("Input object is not of the expected class (CompInt_model).")
   }
 }
 
 
 
+coef.CompInt_model <- function(x, ...) {
+    return(x[["pseudo_posterior"]][["args"]][["coefs"]])
+}
 
 
+vcov.CompInt_model <- function(x, ...) {
+  return(x[["pseudo_posterior"]][["args"]][["vcov"]])
+}
 
 
 
