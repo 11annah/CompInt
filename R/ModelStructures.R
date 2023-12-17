@@ -81,15 +81,19 @@ logistf_to_compint <- function(model, data) {
 }
 
 ################################################################################
-#' @export
-transform_fun.glm <- function(x){
-  return("glm_to_compint")
+
+model_transform <- function(model_fit,data){
+  if("CompInt_model"%in%class(model_fit)){return(model_fit)}
+  if("glm" %in% class(model_fit)){return(glm_to_compint(model_fit))}
+  if("logistf" %in% class(model_fit)){
+    if(is.null(data)){stop("Model fits of the class 'logistf' do not store the data used to fit them.\n Please specify the variable 'data' in the function call.")
+    }else{
+      return(logistf_to_compint(model_fit,data))
+      }
+  }
+  else{stop(paste0("The CompInt package does not offer automatic transform of model fits of class '",class(model_fit),"'.\n Please use the 'various_to_compint' function to manually transform this object first."))}
 }
 
-#' @export
-transform_fun.logistf <- function(x){
-  return("logistf_to_compint")
-}
 
 
 

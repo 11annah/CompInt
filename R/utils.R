@@ -1,9 +1,14 @@
+assumptionstop<-function(assumption){
+if(is.null(assumption)){stop("TBD #TOFIX ")}
+}
+
 check_model_class<-function(model,inputname){
   message<-paste0("Input ",inputname," is not of the expected class (CompInt_model).")
   if(!inherits(model, "CompInt_model")){
     stop(message)
   }
 }
+
 
 regs <- function(object) {
   check_model_class(object,"object")

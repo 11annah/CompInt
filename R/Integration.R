@@ -86,6 +86,7 @@ data_according_to_assumptions<-function(mod,assumption,newdata=NULL,reg_of_inter
       data_asmpt<-as.data.frame(cbind(RI,prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)),-which(names(prep_for_asmpt)==reg_of_interest)]))
       names(data_asmpt)<-c(reg_of_interest,names(prep_for_asmpt)[-which(names(prep_for_asmpt)==reg_of_interest)])}}
   if(assumption=="A.II''"){data_asmpt<-prep_for_asmpt}
+  return(data_asmpt)
 }
 
 
