@@ -18,7 +18,7 @@ get_gME<-function(model_fit,assumption=NULL,reg_of_interest=NULL,seed=NULL,ndraw
       }else{inverse_link<-Inverse.Functions[["Inverse"]][which(Inverse.Functions[["Link"]]==model[["model_specification"]][["family"]][["Link"]])]}
     }
 
-    eval_g_theta_at_point<-eval(parse(text=paste("function(theta,RI,l){",
+    eval_g_theta_at_point<-eval(parse(text=paste("function(theta,RI,l,df){",
                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,...)
                                 ,"}")))
 
@@ -31,16 +31,17 @@ get_gME<-function(model_fit,assumption=NULL,reg_of_interest=NULL,seed=NULL,ndraw
       coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
 
       if(reg_of_interest%in%model[["model_specification"]][["regs"]][["metric"]]){
+        attach(EmpDat)
         result<-numeric()
-        with(EmpDat, {
           for(i in 1:nrow(coef_draws)){
             RI<-torch_tensor(data_asmpt[,which(names(data_asmpt)==reg_of_interest)],requires_grad=TRUE)
+            environment(eval_g_theta_at_point) <- environment()
             interim<-eval_g_theta_at_point(theta=coef_draws[i,],RI=RI,l=1:nrow(data_asmpt))
             interim$retain_grad
             interim$backward(gradient=torch_tensor(rep(1,nrow(data_asmpt))))
             result[i]<-sum(as.numeric(RI$grad))/nrow(data_asmpt)
           }
-        })
+        detach(EmpDat)
         return(result)
       }
 

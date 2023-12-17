@@ -29,9 +29,7 @@ data_prep<-function(mod,data=NULL,separate_interactions=FALSE){
     INTs<-data.frame(terms=stringr::str_replace(terms,paste0("\\",notation),"_x_"),
                      expr=stringr::str_replace(terms,paste0("\\",notation),"*"))
 
-    with(dat, {
-    for(i in seq_along(INTs$terms)){dat[[INTs$terms[i]]]<-eval(parse(text=INTs$expr[i]))}
-    })
+    for(i in seq_along(INTs$terms)){dat[[INTs$terms[i]]]<-with(dat,{eval(parse(text=INTs$expr[i]))})}
   }
   return(dat)
 }
