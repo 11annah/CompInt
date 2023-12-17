@@ -20,3 +20,9 @@ get_original_formula<-function(model){
 list_interaction<-function(notation,term_attr){
   list(notation=notation,terms=term_attr$term.labels[which(grepl(notation, term_attr$term.labels))],present=any(grepl(notation, term_attr$term.labels)))
 }
+
+check_formula_validity<-function(regnames,data){
+  if(any(!regnames %in% names(data))){
+    stop("All terms used in the model formula need to correspond to variable names of the specified model object's data. Please fully preprocess the data before fitting the model.")
+  }
+}

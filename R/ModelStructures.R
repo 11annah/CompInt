@@ -1,14 +1,17 @@
 #' Functions for transforming specific model objects to CompInt model objects
 #'
-#' ... Complete documentation !!!
+#' ... Complete documentation !!! #TOFIX
 #' @name Changing-model-structures
 
 #' @describeIn Changing-model-structures Transforms a standard glm model into a CompInt model
 #' @export
 
 glm_to_compint <- function(model) {
-  term_attr<-attributes(terms(model))
   original_formula <- get_original_formula(model)
+  data<-model$data
+  term_attr<-attributes(terms(model))
+
+  check_formula_validity(names(term_attr$dataClasses),data)
 
   structure(list(
     model = model,
@@ -27,9 +30,9 @@ glm_to_compint <- function(model) {
     inference = "frequentist",
     pseudo_posterior = list(
       args = list(coefs=coef(model),vcov=vcov(model)),
-      fun = function(object,ndraws,...){
-        MASS::mvrnorm(n = ndraws, mu=object[["pseudo_posterior"]][["args"]][["coefs"]],
-                      object[["pseudo_posterior"]][["args"]][["vcov"]],...)
+      fun = function(model,ndraws,...){
+        MASS::mvrnorm(n = ndraws, mu=model[["pseudo_posterior"]][["args"]][["coefs"]],
+                      Sigma=model[["pseudo_posterior"]][["args"]][["vcov"]],...)
       }
     )
   ),
@@ -45,6 +48,8 @@ glm_to_compint <- function(model) {
 logistf_to_compint <- function(model, data) {
   original_formula <- get_original_formula(model)
   term_attr<-attributes(terms(model))
+
+  check_formula_validity(names(term_attr$dataClasses),data)
 
   structure(list(
     model = model,
@@ -63,9 +68,9 @@ logistf_to_compint <- function(model, data) {
     inference = "frequentist",
     pseudo_posterior = list(
                           args = list(coefs=coef(model),vcov=(model)),
-                          fun = function(object,ndraws,...){
-                          MASS::mvrnorm(n = ndraws, mu=object[["pseudo_posterior"]][["args"]][["coefs"]],
-                                        object[["pseudo_posterior"]][["args"]][["vcov"]],...)
+                          fun = function(model,ndraws,...){
+                          MASS::mvrnorm(n = ndraws, mu=model[["pseudo_posterior"]][["args"]][["coefs"]],
+                                        Sigma=model[["pseudo_posterior"]][["args"]][["vcov"]],...)
                                                        }
      )
   ),
@@ -87,17 +92,6 @@ logistf_to_compint <- function(model, data) {
 
 ################################################################################
 
-
-regs <- function(object) {
-  if(inherits(object, "CompInt_model")) {
-    return(unlist(object$model_specification$regs))
-  } else {
-    stop("Input object is not of the expected class (CompInt_model).")
-  }
-}
-
-
-
 coef.CompInt_model <- function(x, ...) {
     return(x[["pseudo_posterior"]][["args"]][["coefs"]])
 }
@@ -108,7 +102,42 @@ vcov.CompInt_model <- function(x, ...) {
 }
 
 
+################################################################################
 
+#' Draws samples from the parameter distribution of a CompInt_model object.
+#'
+#' This function generates draws from the parameter distribution of a CompInt_model object.
+#'
+#' @param object A CompInt_model object.
+#' @param ndraws Number of draws to generate.
+#' @param seed Seed for the random number generator.
+#' @param ... Additional arguments passed to the underlying draw function. This function is stored in model$pseudo_posterior$fun.
+#'
+#' @return A matrix of draws from the parameter distribution.
+#'
+#' @details
+#' #TOFIX!!!
+#'
+#' @examples
+#' \dontrun{
+#' # Example usage
+#' glm <- ###some GLM needs to be fit!!! #TOFIX!!!
+#' model <- glm_to_compint(glm)
+#' draws <- draws_from_paramdist(model, ndraws = 1000, seed = 123)
+#' }
+#'
+#' #TOFIX: is importFrom needed here? I mean it depends on the pseudo_posterior fun
+#'
+#' @export
+
+draws_from_paramdist<-function(model,ndraws=1000,seed=NULL,...){
+  check_model_class(model,"model")
+  if(is.null(seed)){
+    stop("Generating draws from the parameter distribution is a pseudo random process. Please specify a seed.")
+  }
+  set.seed(seed)
+  return(model[["pseudo_posterior"]][["fun"]](model=model,ndraws=ndraws,...))
+}
 
 
 
