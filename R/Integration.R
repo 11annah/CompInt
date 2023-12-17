@@ -63,21 +63,25 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
   return(linear_predictor)
 }
 
-make_g_theta<-function(model_type,linear_predictor=NULL,...){
-  # To be expanded!
+
+# Documentation is missing!! #TOFIX !
+make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
+  # To be expanded (ideally)
   if(model_type %in% c("GLM","GLMM")){
     if(is.null(linear_predictor)){stop("Models of type 'GLM' and 'GLMM' require a linear predictor.")}
     if(is.null(inverse_link)){
       g_theta<-linear_predictor
+      warning("No inverse link function was specified, which is generally not intended. Returning linear predictor.")
     }else{
       g_theta<-paste0(inverse_link,"(",linear_predictor,")")}
   }
+  return(g_theta)
 }
 
 
 #data_according_to_assumptions
     # this is for empirical integration
 
-## matching formula expressions to categories
+
 
 

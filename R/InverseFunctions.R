@@ -19,5 +19,4 @@ Inverse.Functions<-data.frame(Link=c("logit",
                                 "torch_inv_probit")
                       )
 
-usethis::use_data(Inverse.Functions,internal=TRUE)
 

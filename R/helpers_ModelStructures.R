@@ -26,3 +26,10 @@ check_formula_validity<-function(regnames,data){
     stop("All terms used in the model formula need to correspond to variable names of the specified model object's data. Please fully preprocess the data before fitting the model.")
   }
 }
+
+
+make_modfam<-function(family,link){
+  list(Family=family,Link=link)
+}
+
+

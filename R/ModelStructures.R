@@ -1,7 +1,8 @@
-#' Functions for transforming specific model objects to CompInt model objects
+#' Changing-model-structures: Functions for transforming specific model objects to CompInt model objects
 #'
 #' ... Complete documentation !!! #TOFIX
-#' @name Changing-model-structures
+#'
+
 
 #' @describeIn Changing-model-structures Transforms a standard glm model into a CompInt model
 #' @export
@@ -19,7 +20,7 @@ glm_to_compint <- function(model) {
     formula = original_formula,
     type = "GLM",
     model_specification = list(
-      family = family(model),
+      family = make_modfam(family(model)[[1]],family(model)[[2]]),
       regs = list(
         categorical=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses!="numeric")],term_attr$term.labels),
         metric=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses=="numeric")],term_attr$term.labels),
@@ -57,7 +58,7 @@ logistf_to_compint <- function(model, data) {
     formula = original_formula,
     type = "GLM",
     model_specification = list(
-      family = list("binomial","logistf"),
+      family = make_modfam("binomial","logistf"),
       regs = list(
                 categorical=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses!="numeric")],term_attr$term.labels),
                 metric=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses=="numeric")],term_attr$term.labels),
