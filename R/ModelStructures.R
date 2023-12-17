@@ -11,16 +11,19 @@ glm_to_compint <- function(model) {
   original_formula <- get_original_formula(model)
 
   structure(list(
-    model = model$data,
-    data = data,
+    model = model,
+    data = model$data,
     formula = original_formula,
     type = "GLM",
     model_specification = list(
       family = family(model),
       regs = list(
         categorical=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses!="numeric")],term_attr$term.labels),
-        metric=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses=="numeric")],term_attr$term.labels)
-      )),
+        metric=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses=="numeric")],term_attr$term.labels),
+        interactions=list_interaction(notation=":",term_attr=term_attr)
+      ),
+      intercept=term_attr$intercept==1
+      ),
     inference = "frequentist",
     pseudo_posterior = list(
       args = list(coefs=coef(model),vcov=vcov(model)),
@@ -53,7 +56,10 @@ logistf_to_compint <- function(model, data) {
       regs = list(
                 categorical=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses!="numeric")],term_attr$term.labels),
                 metric=intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses=="numeric")],term_attr$term.labels),
-    )),
+                interactions=list_interaction(notation=":",term_attr=term_attr)
+    ),
+    intercept=term_attr$intercept==1
+    ),
     inference = "frequentist",
     pseudo_posterior = list(
                           args = list(coefs=coef(model),vcov=(model)),

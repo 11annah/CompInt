@@ -17,3 +17,6 @@ get_original_formula<-function(model){
   return(formula)
 }
 
+list_interaction<-function(notation,term_attr){
+  list(notation=notation,terms=term_attr$term.labels[which(grepl(notation, term_attr$term.labels))],present=any(grepl(notation, term_attr$term.labels)))
+}
