@@ -80,11 +80,16 @@ logistf_to_compint <- function(model, data) {
 
 }
 
+################################################################################
+#' @export
+transform_fun.glm <- function(x){
+  return("glm_to_compint")
+}
 
-
-
-
-
+#' @export
+transform_fun.logistf <- function(x){
+  return("logistf_to_compint")
+}
 
 
 
@@ -93,11 +98,12 @@ logistf_to_compint <- function(model, data) {
 
 ################################################################################
 
+#' @export
 coef.CompInt_model <- function(x, ...) {
     return(x[["pseudo_posterior"]][["args"]][["coefs"]])
 }
 
-
+#' @export
 vcov.CompInt_model <- function(x, ...) {
   return(x[["pseudo_posterior"]][["args"]][["vcov"]])
 }

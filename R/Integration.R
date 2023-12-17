@@ -34,14 +34,7 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
   model_coefficients<-paste0("theta[",1:length(coefs),"]")
 
-  if(!is.null(reg_of_interest)){
-    if(separate_interactions){
-      names(coefs)<-sub(paste0("^",reg_of_interest),"RI",names(coefs))
-    }
-    if(!separate_interactions){
-      if(!mod[["model_specification"]][["regs"]][["interactions"]][["present"]]){stop("'seperate_interactions' is specified as TRUE, but are no interaction terms present in the model.")}
-      names(coefs)<-sub(reg_of_interest,"RI",names(coefs))
-    }}
+  names(coefs)<-RI_and_INT_renaming(mod,names(coefs),reg_of_interest,separate_interactions)
 
   if(mod[["model_specification"]][["intercept"]]){
     if(!grepl("tercept",names(coefs)[1])){warning("The first coefficient's name does not contain the term intercept, but is being used as intercept anyways.")}
@@ -55,9 +48,9 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
   }
 
   if(separate_interactions){
-    linear_predictor<-paste(stringr::str_replace(model_terms,mod[["model_specification"]][["regs"]][["interactions"]][["notation"]],"_x_"),collapse=' ')
+    linear_predictor<-paste(stringr::str_replace(model_terms,paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]),"_x_"),collapse=' ')
   }else{
-    linear_predictor<-paste(stringr::str_replace(model_terms,mod[["model_specification"]][["regs"]][["interactions"]][["notation"]],"[l]*"),collapse=' ')
+    linear_predictor<-paste(stringr::str_replace(model_terms,paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]),"[l]*"),collapse=' ')
   }
 
   return(linear_predictor)
@@ -78,9 +71,23 @@ make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
   return(g_theta)
 }
 
+# Documentation is missing!! #TOFIX !
+# this is for empirical integration
+data_according_to_assumptions<-function(mod,assumption,newdata=NULL,reg_of_interest){
+  prep_for_asmpt<-data_prep(mod,data=newdata)
+  if(assumption=="A.I"){if(ncol(prep_for_asmpt)==1){data_asmpt<-prep_for_asmpt
+  }else{
+    data_asmpt<-as.data.frame(as_array(torch_cartesian_prod(sapply(prep_for_asmpt,function(x) torch_tensor(na.omit(x), dtype = torch_double())))))}
+    names(data_asmpt) <- names(prep_for_asmpt)}
+  if(assumption=="A.II'"){if(is.null(reg_of_interest)){stop("A regressor of interest needs to be specified for assumption A.II'")}
+    if(ncol(prep_for_asmpt)==1){data_asmpt<-prep_for_asmpt
+    }else{
+      RI<-prep_for_asmpt[,which(names(prep_for_asmpt)==reg_of_interest)]
+      data_asmpt<-as.data.frame(cbind(RI,prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)),-which(names(prep_for_asmpt)==reg_of_interest)]))
+      names(data_asmpt)<-c(reg_of_interest,names(prep_for_asmpt)[-which(names(prep_for_asmpt)==reg_of_interest)])}}
+  if(assumption=="A.II''"){data_asmpt<-prep_for_asmpt}
+}
 
-#data_according_to_assumptions
-    # this is for empirical integration
 
 
 
