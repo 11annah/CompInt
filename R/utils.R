@@ -124,8 +124,15 @@ categorical_regressor_draws<-function(data,coef_draws,f){
 apply(coef_draws,1,function(x){sum(f(theta=x,l=1:nrow(data)))/nrow(data)})
 }
 
-
-
+attach_silent_wrapper <- function(data,code) {
+  # Use try to capture and suppress the attach message
+  suppressMessages({suppressWarnings({
+    attach(data,warn.conflicts = FALSE)
+    eval(parse(text=code), envir = parent.frame())
+    on.exit(detach(data))
+    })
+    })
+}
 
 
 

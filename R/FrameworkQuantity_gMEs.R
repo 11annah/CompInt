@@ -45,7 +45,7 @@ if(integration=="empirical"){
       coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
 
       if(continue_metric){
-        attach(EmpDat)
+        attach_silent_wrapper(data=EmpDat,code="
         result<-numeric()
           for(i in 1:nrow(coef_draws)){
             RI<-torch_tensor(data_asmpt[,which(names(data_asmpt)==reg_of_interest)],requires_grad=TRUE)
@@ -53,8 +53,8 @@ if(integration=="empirical"){
             interim$retain_grad
             interim$backward(gradient=torch_tensor(rep(1,nrow(data_asmpt))))
             result[i]<-sum(as.numeric(RI$grad))/nrow(data_asmpt)
-          }
-        detach(EmpDat)
+          }"
+        )
       }
 
       if(continue_categorical){
@@ -70,23 +70,23 @@ if(integration=="empirical"){
         rownames(result)<-nonref_cats
 
         if(assumption %in% c("A.I","A.II'")){
-        attach(cbind(RIvals[[ref_cat]],EmpDat))
+        attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat),code="
         IE_refcat<-categorical_regressor_draws(data=EmpDat,coef_draws=coef_draws,f=eval_g_theta_at_point)
-        detach(cbind(RIvals[[ref_cat]],EmpDat))
+        ")
         for(cat in nonref_cats){
-        attach(cbind(RIvals[[cat]],EmpDat))
+        attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat),code="
         result[cat,]<-categorical_regressor_draws(data=EmpDat,coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
-        detach(cbind(RIvals[[cat]],EmpDat))
+        ")
         }}else{# now for assumption "A.II''"
           all_cats<-c(ref_cat,nonref_cats)
-          attach(cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]))
+          attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),code="
           IE_refcat<-categorical_regressor_draws(data=EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),],coef_draws=coef_draws,f=eval_g_theta_at_point)
-          detach(cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]))
+          ")
           for(cat in nonref_cats){
             other_cats<-all_cats[all_cats != cat]
-            attach(cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]))
+            attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),code="
             result[cat,]<-categorical_regressor_draws(data=EmpDat[which(rowSums(EmpDat[other_cats]) == 0),],coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
-            detach(cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]))
+            ")
           }
         }
       }
