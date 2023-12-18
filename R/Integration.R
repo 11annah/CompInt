@@ -87,15 +87,16 @@ data_according_to_assumptions<-function(mod,assumption=NULL,newdata=NULL,reg_of_
 
   if(assumption=="A.I"){if(ncol(prep_for_asmpt)==1){data_asmpt<-prep_for_asmpt
   }else{
-    data_asmpt<-as.data.frame(as_array(torch_cartesian_prod(sapply(prep_for_asmpt,function(x) torch_tensor(na.omit(x), dtype = torch_double())))))}
+    data_asmpt<-as.data.frame(do.call(expand.grid,prep_for_asmpt))}
     names(data_asmpt) <- names(prep_for_asmpt)}
 
   if(assumption=="A.II'"){if(is.null(reg_of_interest)){stop("A regressor of interest needs to be specified for assumption A.II'")}
     if(ncol(prep_for_asmpt)==1){data_asmpt<-prep_for_asmpt
     }else{
       RI<-prep_for_asmpt[,which(names(prep_for_asmpt)==reg_of_interest)]
-      data_asmpt<-as.data.frame(cbind(RI,prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)),-which(names(prep_for_asmpt)==reg_of_interest)]))
-      names(data_asmpt)<-c(reg_of_interest,names(prep_for_asmpt)[-which(names(prep_for_asmpt)==reg_of_interest)])}}
+      data_asmpt<-as.data.frame(cbind(RI,prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)),-which(names(prep_for_asmpt)==reg_of_interest),drop = FALSE]))
+      names(data_asmpt)[1]<-reg_of_interest
+}}
 
   return(data_asmpt)
 }

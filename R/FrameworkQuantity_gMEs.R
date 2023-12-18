@@ -34,13 +34,20 @@ if(integration=="empirical"){
         regsM<-regsM[-which(regsM==reg_of_interest)]
         regsC<-c(regsC,reg_of_interest)
       }
+
       continue_metric<-reg_of_interest%in%regsM
       continue_categorical<-reg_of_interest%in%regsC
 
-      data_asmpt<-data_according_to_assumptions(mod=model,assumption=assumption,newdata=newdata,reg_of_interest=reg_of_interest)
+      if(continue_categorical){RItype <- "categorical"
+      }else{RItype <- "metric"}
+
+
+      data_asmpt<-data_according_to_assumptions(mod=model,assumption=assumption,newdata=newdata,reg_of_interest=reg_of_interest,RItype=RItype)
       if(length(regsC)==0 | is.null(data_asmpt)){
         EmpDat<-data_asmpt
-      }else{EmpDat<-make_dummy_coded_data(mod=model,dat=data_asmpt,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)}
+      }else{
+        if(regsC==reg_of_interest & assumption %in% c("A.I","A.II'")){EmpDat<-data_asmpt}else{
+        EmpDat<-make_dummy_coded_data(mod=model,dat=data_asmpt,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)}}
 
       coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
 
