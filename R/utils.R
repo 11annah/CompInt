@@ -9,6 +9,16 @@ check_model_class<-function(model,inputname){
   }
 }
 
+attach_silent_wrapper <- function(data,code) {
+  # Use try to capture and suppress the attach message
+  suppressMessages({suppressWarnings({
+    attach(data,warn.conflicts = FALSE)
+    eval(parse(text=code), envir = parent.frame())
+    on.exit(detach(data))
+    })
+    })
+}
+
 
 regs <- function(object) {
   check_model_class(object,"object")
@@ -51,6 +61,37 @@ RI_and_INT_renaming<-function(mod,names,reg_of_interest,separate_interactions){
 
 
 ##
+data_according_to_assumptions<-function(mod,assumption=NULL,newdata=NULL,reg_of_interest=NULL,RItype="metric"){
+  assumptionstop(assumption)
+  if(!RItype %in% c("metric","categorical")){stop("The variable 'RItype' gives the data type of the regressor of interest.\nTherefore,it has to be equal to either 'metric' or 'categorical'.")}
+
+  prep_for_asmpt<-data_prep(mod,data=newdata)
+  if(assumption=="A.II''"){data_asmpt<-prep_for_asmpt}
+
+  if(RItype=="categorical"){
+    assign("RIcat_raw",prep_for_asmpt[[reg_of_interest]],envir = parent.frame())
+    if(ncol(prep_for_asmpt)==1 & assumption %in% c("A.I","A.II'")){return(NULL)
+    }else{prep_for_asmpt[[reg_of_interest]]<-NULL}
+  }else{assign("RIcat_raw",NULL,envir = parent.frame())}
+
+  if(assumption=="A.I"){if(ncol(prep_for_asmpt)==1){data_asmpt<-prep_for_asmpt
+  }else{
+    data_asmpt<-as.data.frame(do.call(expand.grid,prep_for_asmpt))}
+    names(data_asmpt) <- names(prep_for_asmpt)}
+
+  if(assumption=="A.II'"){if(is.null(reg_of_interest)){stop("A regressor of interest needs to be specified for assumption A.II'")}
+    if(ncol(prep_for_asmpt)==1){data_asmpt<-prep_for_asmpt
+    }else{
+      RI<-prep_for_asmpt[,which(names(prep_for_asmpt)==reg_of_interest)]
+      data_asmpt<-as.data.frame(cbind(RI,prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)),-which(names(prep_for_asmpt)==reg_of_interest),drop = FALSE]))
+      names(data_asmpt)[1]<-reg_of_interest
+    }}
+
+  return(data_asmpt)
+}
+
+
+
 make_dummy_coded_data<-function(mod,dat,reg_of_interest=NULL,separate_interactions=FALSE){
   check_model_class(mod,"mod")
   if(any(!complete.cases(dat))){
@@ -101,8 +142,12 @@ Enter C for converting to categorical and N for keeping the variable numeric: "
 }}}
 
 
-dealing_with_catRI<-function(dat,g_theta,RIname="RI"){
+dealing_with_catRI<-function(dat,RIcat_raw,g_theta,RIname="RI"){
   all_cats <- names(dat)[grepl(RIname,names(dat))]
+  if(length(all_cats)==0){
+  all_cats<-names(as.data.frame(model.matrix(~0 + as.factor(RIcat_raw))))
+  all_cats<-sub("as.factor\\(RIcat_raw\\)",RIname,all_cats)
+  }
   nonref_cats <- names(which(sapply(all_cats,function(x)grepl(x,paste(deparse(g_theta),collapse = '')))))
 
   init<-data.frame(matrix(0, nrow = 1, ncol = length(nonref_cats)))
@@ -124,15 +169,7 @@ categorical_regressor_draws<-function(data,coef_draws,f){
 apply(coef_draws,1,function(x){sum(f(theta=x,l=1:nrow(data)))/nrow(data)})
 }
 
-attach_silent_wrapper <- function(data,code) {
-  # Use try to capture and suppress the attach message
-  suppressMessages({suppressWarnings({
-    attach(data,warn.conflicts = FALSE)
-    eval(parse(text=code), envir = parent.frame())
-    on.exit(detach(data))
-    })
-    })
-}
+
 
 
 

@@ -71,37 +71,4 @@ make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
   return(g_theta)
 }
 
-# Documentation is missing!! #TOFIX !
-# this is for empirical integration
-data_according_to_assumptions<-function(mod,assumption=NULL,newdata=NULL,reg_of_interest=NULL,RItype="metric"){
-  assumptionstop(assumption)
-  if(!RItype %in% c("metric","categorical")){stop("The variable 'RItype' gives the data type of the regressor of interest.\nTherefore,it has to be equal to either 'metric' or 'categorical'.")}
-
-  prep_for_asmpt<-data_prep(mod,data=newdata)
-  if(assumption=="A.II''"){data_asmpt<-prep_for_asmpt}
-
-  if(RItype=="categorical"){
-    if(ncol(prep_for_asmpt)==1 & assumption %in% c("A.I","A.II'")){return(NULL)
-    }else{prep_for_asmpt[[reg_of_interest]]<-NULL}
-    }
-
-  if(assumption=="A.I"){if(ncol(prep_for_asmpt)==1){data_asmpt<-prep_for_asmpt
-  }else{
-    data_asmpt<-as.data.frame(do.call(expand.grid,prep_for_asmpt))}
-    names(data_asmpt) <- names(prep_for_asmpt)}
-
-  if(assumption=="A.II'"){if(is.null(reg_of_interest)){stop("A regressor of interest needs to be specified for assumption A.II'")}
-    if(ncol(prep_for_asmpt)==1){data_asmpt<-prep_for_asmpt
-    }else{
-      RI<-prep_for_asmpt[,which(names(prep_for_asmpt)==reg_of_interest)]
-      data_asmpt<-as.data.frame(cbind(RI,prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)),-which(names(prep_for_asmpt)==reg_of_interest),drop = FALSE]))
-      names(data_asmpt)[1]<-reg_of_interest
-}}
-
-  return(data_asmpt)
-}
-
-
-
-
 

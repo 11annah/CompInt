@@ -55,11 +55,11 @@ if(integration=="empirical"){
         attach_silent_wrapper(data=EmpDat,code="
         result<-numeric()
           for(i in 1:nrow(coef_draws)){
-            RI<-torch_tensor(data_asmpt[,which(names(data_asmpt)==reg_of_interest)],requires_grad=TRUE)
-            interim<-eval_g_theta_at_point(theta=coef_draws[i,],l=1:nrow(data_asmpt),RI=RI)
+            RI<-torch_tensor(EmpDat[,which(names(EmpDat)==reg_of_interest)],requires_grad=TRUE)
+            interim<-eval_g_theta_at_point(theta=coef_draws[i,],l=1:nrow(EmpDat),RI=RI)
             interim$retain_grad
-            interim$backward(gradient=torch_tensor(rep(1,nrow(data_asmpt))))
-            result[i]<-sum(as.numeric(RI$grad))/nrow(data_asmpt)
+            interim$backward(gradient=torch_tensor(rep(1,nrow(EmpDat))))
+            result[i]<-sum(as.numeric(RI$grad))/nrow(EmpDat)
           }"
         )
       }
@@ -68,7 +68,7 @@ if(integration=="empirical"){
         if("refcat" %in% ellipsisvars){
           #TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
-        RIvals_prep<-dealing_with_catRI(dat,f,RIname="RI")
+        RIvals_prep<-dealing_with_catRI(dat=EmpDat,RIcat_raw=RIcat_raw,g_theta=eval_g_theta_at_point,RIname="RI")
         RIvals<-RIvals_prep[["vals"]]
         ref_cat<-RIvals_prep[["ref_cat"]]
         nonref_cats<-RIvals_prep[["nonref_cats"]]

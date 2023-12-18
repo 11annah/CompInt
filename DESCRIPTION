@@ -13,5 +13,6 @@ Depends:
     R (>= 2.10),
     torch (>= 0.11.0)
 Imports:
-  stringr
+  stringr,
+  MASS
 RoxygenNote: 7.2.3
