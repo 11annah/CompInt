@@ -23,4 +23,5 @@ ChunkList <- list(
 )
 
 
-usethis::use_data(DATASET, overwrite = TRUE)
+
+usethis::use_data(Inverse.Functions,ChunkList, overwrite = TRUE,internal=TRUE)
