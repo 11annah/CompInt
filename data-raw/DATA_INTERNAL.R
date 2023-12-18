@@ -1,4 +1,5 @@
-## code to prepare `DATASET` dataset goes here
+## Inverse functions
+
 Inverse.Functions<-data.frame(Link=c("logit",
                                      "logistf",
                                      "log",
@@ -11,6 +12,9 @@ Inverse.Functions<-data.frame(Link=c("logit",
                                         "torch_inv_probit")
 )
 
+################################################################################
+## Code chunks
+
 ChunkList <- list(
   getting_situated = quote({
     assumptionstop(assumption)
@@ -18,7 +22,7 @@ ChunkList <- list(
     for (variablename in ellipsisvars) {
       assign(variablename, list(...)[[variablename]], envir = environment())
     }
-    model<-model_transform(model_fit,data=data)
+    model<-model_transform(model_fit,data=data)#This needs to be extended depending on the model structure functions that are written #TOFIX
   })
 )
 

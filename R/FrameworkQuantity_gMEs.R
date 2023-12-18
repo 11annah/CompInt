@@ -1,12 +1,8 @@
 
 #' @export
 get_gME<-function(model_fit,assumption=NULL,reg_of_interest=NULL,seed=NULL,ndraws=1000,integration="empirical",separate_interactions=FALSE,newdata=NULL,subset=NULL,catRIbin=FALSE,...){
-  assumptionstop(assumption)
-  ellipsisvars <- names(list(...))
-  for (variablename in ellipsisvars) {
-    assign(variablename, list(...)[[variablename]], envir = environment())
-  }
-  model<-model_transform(model_fit,data=data) #This needs to be extended depending on the model structure functions that are written #TOFIX
+eval(ChunkList$getting_situated)
+
   if(is.null(reg_of_interest)){stop("In order to calculate gME values, a regressor of interest must be defined using the variable reg_of_interest.")}
   if(!reg_of_interest%in%regs(model)){stop("'reg_of_interest' must be a variable used for the model specification.")}
 
