@@ -52,10 +52,15 @@ if(integration=="empirical"){
       coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
 
       if(continue_metric){
+        if(sum(as.numeric(c("RI",reg_of_interest) %in% names(EmpDat)))==1){
+          RIname<-c("RI",reg_of_interest)[which(c("RI",reg_of_interest)%in%names(EmpDat))]
+        }else{
+          stop(paste0("Both the term 'RI' and '",reg_of_interest,"', which was specified as regressor of interest, appear in the data to be used for empirical integration. This is a problem."))
+        }
         attach_silent_wrapper(data=EmpDat,code="
         result<-numeric()
           for(i in 1:nrow(coef_draws)){
-            RI<-torch_tensor(EmpDat[,which(names(EmpDat)==reg_of_interest)],requires_grad=TRUE)
+            RI<-torch_tensor(EmpDat[,which(names(EmpDat)==RIname)],requires_grad=TRUE)
             interim<-eval_g_theta_at_point(theta=coef_draws[i,],l=1:nrow(EmpDat),RI=RI)
             interim$retain_grad
             interim$backward(gradient=torch_tensor(rep(1,nrow(EmpDat))))
