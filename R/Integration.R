@@ -72,3 +72,4 @@ make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
 }
 
 
+# %*% with categoricals!
