@@ -76,3 +76,56 @@ make_dummy_coded_data<-function(mod,dat,reg_of_interest=NULL,separate_interactio
 }
 
 
+binary_regs <- function(data, col,catRIbin){
+  if(is.numeric(data[[col]])){
+    # Check for values other than NA, 0, and 1
+    unique_values <- unique(data[[col]][!is.na(data[[col]])])
+    if(all(unique_values%in%c(0,1))){
+    if(!catRIbin){
+    prompt<-paste0(
+      "The regressor '",col,"' is stored as a numeric dichotomous variable.\nAs such, it could be treated as either a categorical or metric regressor.\nIf '",col,"' cannot take values than '0', '1', or 'NA', it is advisable to convert it to a categorical variable.\nOtherwise, it makes sense to keep it as numeric.\n
+Enter C for converting to categorical and N for keeping the variable numeric: "
+    )
+    user_input <- readline(prompt = cat(prompt))
+    if(!as.character(user_input)%in%c("C","N")){message("Sorry, but you have to decide between C and N.")
+      user_input <- readline(prompt = cat(prompt))
+    }
+    if(!as.character(user_input)%in%c("C","N")){stop("Sorry, but you really have to decide between C and N.")}
+    }
+    if(as.character(user_input)=="C" | catRIbin){
+      data[,col]<-data[,col]
+      names(data)[which(names(data)==col)]<-paste0(col,"1")
+      data[,paste0(col,"0")]<-abs(as.numeric(data[,paste0(col,"1")])-1)
+      return(data=data)
+    }
+}}}
+
+
+dealing_with_catRI<-function(dat,g_theta,RIname="RI"){
+  all_cats <- names(dat)[grepl(RIname,names(dat))]
+  nonref_cats <- names(which(sapply(all_cats,function(x)grepl(x,paste(deparse(g_theta),collapse = '')))))
+
+  init<-data.frame(matrix(0, nrow = 1, ncol = length(nonref_cats)))
+  names(init)<-nonref_cats
+  vals<-replicate(n=length(all_cats),init, simplify = FALSE)
+  names(vals)<-all_cats
+
+  rep1<-mapply(function(x,y)which(names(x)%in%y),vals,names(vals))
+
+  for(cat in names(vals)){
+    vals[[cat]][1,rep1[[cat]]]<-1
+  }
+
+  return(list(vals=vals,ref_cat= all_cats[!(all_cats %in% nonref_cats)],nonref_cats=nonref_cats))
+
+}
+
+categorical_regressor_draws<-function(data,coef_draws,f){
+apply(coef_draws,1,function(x){sum(f(theta=x,l=1:nrow(data)))/nrow(data)})
+}
+
+
+
+
+
+
