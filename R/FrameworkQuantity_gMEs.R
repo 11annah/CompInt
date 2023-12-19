@@ -18,7 +18,6 @@ eval(ChunkList$getting_situated)
     eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,RI=NULL){",
                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,...)
                                 ,"}")))
-
 if(integration=="empirical"){
       regsM<-model[["model_specification"]][["regs"]][["metric"]]
       regsC<-model[["model_specification"]][["regs"]][["categorical"]]
@@ -79,21 +78,21 @@ if(integration=="empirical"){
 
         if(assumption %in% c("A.I","A.II'")){
         attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat),code="
-        IE_refcat<-categorical_regressor_draws(data=EmpDat,coef_draws=coef_draws,f=eval_g_theta_at_point)
+        IE_refcat<-categorical_regressor_draws(data=cbind(RIvals[[ref_cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)
         ")
         for(cat in nonref_cats){
         attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat),code="
-        result[cat,]<-categorical_regressor_draws(data=EmpDat,coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
+        result[cat,]<-categorical_regressor_draws(data=cbind(RIvals[[cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
         ")
         }}else{# now for assumption "A.II''"
           all_cats<-c(ref_cat,nonref_cats)
           attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),code="
-          IE_refcat<-categorical_regressor_draws(data=EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),],coef_draws=coef_draws,f=eval_g_theta_at_point)
+          IE_refcat<-categorical_regressor_draws(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)
           ")
           for(cat in nonref_cats){
             other_cats<-all_cats[all_cats != cat]
             attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),code="
-            result[cat,]<-categorical_regressor_draws(data=EmpDat[which(rowSums(EmpDat[other_cats]) == 0),],coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
+            result[cat,]<-categorical_regressor_draws(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
             ")
           }
         }
