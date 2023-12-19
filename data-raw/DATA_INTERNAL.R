@@ -23,6 +23,15 @@ ChunkList <- list(
       assign(variablename, list(...)[[variablename]], envir = environment())
     }
     model<-model_transform(model_fit,data=data)#This needs to be extended depending on the model structure functions that are written #TOFIX
+    newdata <- newdata_subset_merge(newdata,subset,mod=model)
+    }),
+
+  getting_inverse = quote({
+    if(!"inverse_link"%in%ellipsisvars){
+      if(!model[["model_specification"]][["family"]][["Link"]] %in% Inverse.Functions[["Link"]]){
+        stop("Unfortunately, there is no default inverse link function for the given model's Link='",model[["model_specification"]][["family"]][["Link"]],"'.\n Please specify the variable 'inverse_link' in the function call")
+      }else{inverse_link<-Inverse.Functions[["Inverse"]][which(Inverse.Functions[["Link"]]==model[["model_specification"]][["family"]][["Link"]])]}
+    }
   })
 )
 

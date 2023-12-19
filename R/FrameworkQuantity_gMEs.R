@@ -9,11 +9,9 @@ eval(ChunkList$getting_situated)
 
   if(model[["type"]] %in% c("GLM","GLMM")){
     linear_predictor<-make_linear_predictor(mod=model,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)
-    if(!"inverse_link"%in%ellipsisvars){
-    if(!model[["model_specification"]][["family"]][["Link"]] %in% Inverse.Functions[["Link"]]){
-      stop("Unfortunately, there is no default inverse link function for the given model's Link='",model[["model_specification"]][["family"]][["Link"]],"'.\n Please specify the variable 'inverse_link' in the function call")
-      }else{inverse_link<-Inverse.Functions[["Inverse"]][which(Inverse.Functions[["Link"]]==model[["model_specification"]][["family"]][["Link"]])]}
-    }
+
+    eval(ChunkList$getting_inverse)
+
 
     eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,RI=NULL){",
                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,...)

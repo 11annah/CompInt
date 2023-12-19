@@ -44,6 +44,16 @@ data_prep<-function(mod,data=NULL,separate_interactions=FALSE){
   return(dat)
 }
 
+newdata_subset_merge<-function(newdata,subset,mod){
+  if(is.null(subset)){return(newdata)
+  }else{
+    if(is.null(newdata)){newdata<-mod[["data"]]}
+    output<-newdata[subset,]
+    return(output)
+    }
+}
+
+
 
 RI_and_INT_renaming<-function(mod,names,reg_of_interest,separate_interactions){
   check_model_class(mod,"mod")
