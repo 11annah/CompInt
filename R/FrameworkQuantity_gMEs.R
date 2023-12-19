@@ -18,6 +18,7 @@ eval(ChunkList$getting_situated)
     eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,RI=NULL){",
                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,...)
                                 ,"}")))
+
 if(integration=="empirical"){
       regsM<-model[["model_specification"]][["regs"]][["metric"]]
       regsC<-model[["model_specification"]][["regs"]][["categorical"]]
