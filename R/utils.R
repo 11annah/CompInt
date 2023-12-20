@@ -15,7 +15,7 @@ regs <- function(object) {
 
 reg_naming_check<-function(mod){
 regs <- regs(mod)
-contained <- sapply(regs, function(element1) any(sapply(my_vector, function(element2) grepl(element1, element2) && element1 != element2)))
+contained <- sapply(regs, function(element1) any(sapply(regs, function(element2) grepl(element1, element2) && element1 != element2)))
 if(any(contained)){stop(paste0("The name of the regressor(s) '",paste(regs[contained], collapse=" & "),"' is fully contained within another regressor name.\nUnfortunately, this is incompatible with the CompInt package's functionality.\nPlease rename the regressor(s) accordingly."))}
 }
 
@@ -62,21 +62,6 @@ newdata_subset_merge<-function(newdata,subset,mod){
 
 
 
-RI_and_INT_renaming<-function(mod,names,reg_of_interest,separate_interactions){
-  check_model_class(mod,"mod")
-  if(!is.null(reg_of_interest)){
-    if(separate_interactions){
-      if(!mod[["model_specification"]][["regs"]][["interactions"]][["present"]]){stop("'seperate_interactions' is specified as TRUE, but are no interaction terms present in the model.")}
-      nonINTs<-which(!grepl(paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]),names))
-      names[nonINTs]<-sub(paste0("^",reg_of_interest),"RI",names[nonINTs])
-    }
-    if(!separate_interactions){
-      names<-sub(reg_of_interest,"RI",names)
-    }}
-  return(names)
-}
-
-
 ##
 data_according_to_assumptions<-function(mod,assumption=NULL,newdata=NULL,reg_of_interest=NULL,RItype="metric"){
   assumptionstop(assumption)
@@ -116,8 +101,7 @@ make_dummy_coded_data<-function(mod,dat,reg_of_interest=NULL,separate_interactio
   }
   if(isFALSE(separate_interactions)){
   cat_vars<-mod[["model_specification"]][["regs"]][["categorical"]]
-  cat_vars<-RI_and_INT_renaming(mod,cat_vars,reg_of_interest,separate_interactions)
-  names(dat)<-RI_and_INT_renaming(mod,names(dat),reg_of_interest,separate_interactions)
+
   }else{
     #TOFIX!!
   }

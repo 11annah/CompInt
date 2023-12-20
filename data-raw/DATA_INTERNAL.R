@@ -25,6 +25,8 @@ ChunkList <- list(
     model<-model_transform(model_fit,data=data)#This needs to be extended depending on the model structure functions that are written #TOFIX
     reg_naming_check(model)
     newdata <- newdata_subset_merge(newdata,subset,mod=model)
+
+    if(separate_interactions & !model[["model_specification"]][["regs"]][["interactions"]][["present"]]){stop("'seperate_interactions' is specified as TRUE, but are no interaction terms present in the model.")}
     }),
 
   getting_inverse = quote({

@@ -13,7 +13,7 @@ eval(ChunkList$getting_situated)
     eval(ChunkList$getting_inverse)
 
 
-    eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,RI=NULL){",
+    eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,",reg_of_interest,"=NULL){",
                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,...)
                                 ,"}")))
 
@@ -46,20 +46,15 @@ if(integration=="empirical"){
       coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
 
       if(continue_metric){
-        if(sum(as.numeric(c("RI",reg_of_interest) %in% names(EmpDat)))==1){
-          RIname<-c("RI",reg_of_interest)[which(c("RI",reg_of_interest)%in%names(EmpDat))]
-        }else{
-          stop(paste0("Both the term 'RI' and '",reg_of_interest,"', which was specified as regressor of interest, appear in the data to be used for empirical integration. This is a problem."))
-        }
-        attach_silent_wrapper(data=EmpDat,code="
+        attach_silent_wrapper(data=EmpDat,code=paste0("
         result<-numeric()
           for(i in 1:nrow(coef_draws)){
-            RI<-torch_tensor(EmpDat[,which(names(EmpDat)==RIname)],requires_grad=TRUE)
-            interim<-eval_g_theta_at_point(theta=coef_draws[i,],l=1:nrow(EmpDat),RI=RI)
+            RI<-torch_tensor(EmpDat[,which(names(EmpDat)==reg_of_interest)],requires_grad=TRUE)
+            interim<-eval_g_theta_at_point(theta=coef_draws[i,],l=1:nrow(EmpDat),",reg_of_interest,"=RI)
             interim$retain_grad
             interim$backward(gradient=torch_tensor(rep(1,nrow(EmpDat))))
             result[i]<-sum(as.numeric(RI$grad))/nrow(EmpDat)
-          }"
+          }")
         )
       }
 
@@ -67,7 +62,7 @@ if(integration=="empirical"){
         if("refcat" %in% ellipsisvars){
           #TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
-        RIvals_prep<-dealing_with_catRI(dat=EmpDat,RIcat_raw=RIcat_raw,g_theta=eval_g_theta_at_point,RIname="RI")
+        RIvals_prep<-dealing_with_catRI(dat=EmpDat,RIcat_raw=RIcat_raw,g_theta=eval_g_theta_at_point,RIname=reg_of_interest)
         RIvals<-RIvals_prep[["vals"]]
         ref_cat<-RIvals_prep[["ref_cat"]]
         nonref_cats<-RIvals_prep[["nonref_cats"]]

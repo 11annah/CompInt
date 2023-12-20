@@ -34,18 +34,19 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
   model_coefficients<-paste0("theta[",1:length(coefs),"]")
 
-  names(coefs)<-RI_and_INT_renaming(mod,names(coefs),reg_of_interest,separate_interactions)
-
   if(mod[["model_specification"]][["intercept"]]){
     if(!grepl("tercept",names(coefs)[1])){warning("The first coefficient's name does not contain the term intercept, but is being used as intercept anyways.")}
-    model_terms <- model_coefficients[1]
+    model_terms <- list(list(model_term=model_coefficients[1]))
     start<-2
   }else{model_terms <- 0
   start<-1}
 
-  for (i in c(start:length(coefs))) {
-    model_terms <- c(model_terms, paste0("+ ", model_coefficients[i], " * ", paste0(names(coefs))[i],"[l]"))
+  for (i in start:length(coefs)) {
+    if(start==2){j=i}else{j=i+1}
+    model_terms[[j]] <- list(model_term=paste0(model_coefficients[i], " * ", paste0(names(coefs))[i],"[l]"))
   }
+  model_terms<-unlist(model_terms)
+  model_terms[2:length(model_terms)]<-paste0("+ ",model_terms[2:length(model_terms)])
 
   if(separate_interactions){
     linear_predictor<-paste(stringr::str_replace(model_terms,paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]),"_x_"),collapse=' ')
