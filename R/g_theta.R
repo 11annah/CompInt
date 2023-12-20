@@ -43,16 +43,20 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
   for (i in start:length(coefs)) {
     if(start==2){j=i}else{j=i+1}
-    model_terms[[j]] <- list(model_term=paste0(model_coefficients[i], " * ", paste0(names(coefs))[i],"[l]"))
+    INT_notation<-paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]])
+
+    TERM<-paste0(model_coefficients[i], " * ", paste0(names(coefs))[i],"[l]")
+    if(separate_interactions & grepl(reg_of_interest,TERM)){TERM<-stringr::str_replace(model_terms,INT_notation,"_x_")
+    }else{TERM<-stringr::str_replace(model_terms,INT_notation,"*")}
+
+    model_terms[[j]] <- list(model_term=TERM,
+                             interaction_term=)
   }
   model_terms<-unlist(model_terms)
   model_terms[2:length(model_terms)]<-paste0("+ ",model_terms[2:length(model_terms)])
 
-  if(separate_interactions){
-    linear_predictor<-paste(stringr::str_replace(model_terms,paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]),"_x_"),collapse=' ')
-  }else{
-    linear_predictor<-paste(stringr::str_replace(model_terms,paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]),"[l]*"),collapse=' ')
-  }
+  linear_predictor<-paste(model_terms,collapse=' ')
+
 
   return(linear_predictor)
 }
