@@ -49,13 +49,15 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
     TERM<-paste0(model_coefficients[i], " * ", REG,"[l]")
     if(separate_interactions & grepl(reg_of_interest,TERM)){TERM<-stringr::str_replace(TERM,INT_notation,"_x_")
     }else{TERM<-stringr::str_replace(TERM,INT_notation,"[l] * ")}
-
     model_terms[[j]] <- list(model_term = TERM,
-                             interaction_term = grepl(INT_notation, TERM)
+                             regressors = unlist(strsplit(REG,INT_notation)),
+                             coefficient = model_coefficients[i],
+                             categorical_element = unlist(sapply(unlist(strsplit(REG,INT_notation)),function(x)wich_reg_is_involved("categorical",mod,x))),
+                             metric_element = unlist(sapply(unlist(strsplit(REG,INT_notation)),function(x)wich_reg_is_involved("metric",mod,x)))
+    )
 
-                               )
   }
-  model_terms<-unlist(model_terms)
+  model_terms<-unlist(lapply(model_terms, `[[`, "model_term"))
   model_terms[2:length(model_terms)]<-paste0("+ ",model_terms[2:length(model_terms)])
 
   linear_predictor<-paste(model_terms,collapse=' ')

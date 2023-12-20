@@ -171,6 +171,10 @@ apply(coef_draws,1,function(x){sum(f(theta=x,l=1:nrow(data)))/nrow(data)})
 }
 
 
-
+wich_reg_is_involved<-function(met_or_cat,mod,term){
+  logical<-unlist(sapply(mod[["model_specification"]][["regs"]][[met_or_cat]],function(y)grepl(y,term)))
+  if(is.null(logical)){return(NULL)}else{
+  mod[["model_specification"]][["regs"]][[met_or_cat]][which(logical)]}
+}
 
 
