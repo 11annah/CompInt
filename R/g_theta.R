@@ -45,12 +45,14 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
     if(start==2){j=i}else{j=i+1}
     INT_notation<-paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]])
 
-    TERM<-paste0(model_coefficients[i], " * ", paste0(names(coefs))[i],"[l]")
+    REG<-names(coefs)[i]
+    TERM<-paste0(model_coefficients[i], " * ", REG,"[l]")
     if(separate_interactions & grepl(reg_of_interest,TERM)){TERM<-stringr::str_replace(TERM,INT_notation,"_x_")
-    }else{TERM<-stringr::str_replace(TERM,INT_notation,"*")}
+    }else{TERM<-stringr::str_replace(TERM,INT_notation,"[l] * ")}
 
-    model_terms[[j]] <- list(model_term=TERM#,
-                             #interaction_term=
+    model_terms[[j]] <- list(model_term = TERM,
+                             interaction_term = grepl(INT_notation, TERM)
+
                                )
   }
   model_terms<-unlist(model_terms)
