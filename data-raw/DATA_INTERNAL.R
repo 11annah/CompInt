@@ -23,6 +23,7 @@ ChunkList <- list(
       assign(variablename, list(...)[[variablename]], envir = environment())
     }
     model<-model_transform(model_fit,data=data)#This needs to be extended depending on the model structure functions that are written #TOFIX
+    reg_naming_check(model)
     newdata <- newdata_subset_merge(newdata,subset,mod=model)
     }),
 
