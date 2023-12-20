@@ -8,9 +8,19 @@ check_model_class<-function(model,inputname){
     stop(message)
   }
 }
+regs <- function(object) {
+  check_model_class(object,"object")
+  return(unlist(object[["model_specification"]][["regs"]][c("metric","categorical")]))
+}
+
+reg_naming_check<-function(mod){
+regs <- regs(mod)
+contained <- sapply(regs, function(element1) any(sapply(my_vector, function(element2) grepl(element1, element2) && element1 != element2)))
+if(any(contained)){stop(paste0("The name of the regressor(s) '",paste(regs[contained], collapse=" & "),"' is fully contained within another regressor name.\nUnfortunately, this is incompatible with the CompInt package's functionality.\nPlease rename the regressor(s) accordingly."))}
+}
+
 
 attach_silent_wrapper <- function(data,code) {
-  # Use try to capture and suppress the attach message
   suppressMessages({suppressWarnings({
     attach(data,warn.conflicts = FALSE)
     eval(parse(text=code), envir = parent.frame())
@@ -20,10 +30,7 @@ attach_silent_wrapper <- function(data,code) {
 }
 
 
-regs <- function(object) {
-  check_model_class(object,"object")
-  return(unlist(object[["model_specification"]][["regs"]][c("metric","categorical")]))
-}
+
 
 data_prep<-function(mod,data=NULL,separate_interactions=FALSE){
   if(is.null(data)){data<-mod[["data"]]}
