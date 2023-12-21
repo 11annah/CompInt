@@ -110,8 +110,10 @@ make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
 #' @export
 integrate_wrt_pm<-function(fun){
   py_fun <- reticulate::r_to_py(fun)
-  reticulate::py_run_file(system.file("inst/python_scripts/test.py"))
-  return(reticulate::py_to_r(output))
+  tochquad <- reticulate::import("torchquad")
+  reticulate::source_python("inst/python_scripts/test.py")
+  add(5,10)
+  #return(reticulate::py_to_r(output))
 }
 
 
