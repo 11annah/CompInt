@@ -79,6 +79,8 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
   if(length(unlist(nonint_cats))>0){}
   if(length(unlist(int_cats))>0){}
   ###TBD!!!!
+  ###TBD!!!!
+  ###TBD!!!!
 
   #split by "*" to make vectors - add 1s where necessary - go by length
 
