@@ -57,9 +57,15 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
     )}
 
   if(!length(mod[["model_specification"]][["regs"]][["categorical"]])==0){
-  vectorize<-which(unlist(lapply(listels_by_name(model_terms,"categorical_element"),length))>0)
+  catTERMS<-listels_by_name(model_terms,"categorical_element")
+  index<-which(unlist(lapply(catTERMS,length))>0)
+  catTERMS<-catTERMS[index]
 
   #make groups
+  grouping<-create_CatInt_groups(catTERMS)
+
+  vectorize<-model_terms[index]
+
 
   new_terms<-list()
   #The following would be a good check, but we have to check that it does not clash with make_binary
