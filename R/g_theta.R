@@ -77,6 +77,8 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
   }
 
+
+  ##Important: return BOTH original AND %*% versions!!!!!!!
   model_terms<-unlist(listels_by_name(list=model_terms,name="model_term"))
   model_terms[2:length(model_terms)]<-paste0("+ ",model_terms[2:length(model_terms)])
 
