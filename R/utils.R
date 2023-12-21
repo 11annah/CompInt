@@ -180,22 +180,21 @@ wich_reg_is_involved<-function(met_or_cat,mod,term){
 
 listels_by_name<-function(list,name){lapply(list, `[[`, name)}
 
+
 ###
 list_contains <- function(list1, list2) {
-  all(sapply(list1, function(x) any(sapply(list2, function(y) all(x %in% y)))))
+all(sapply(list1, function(x) any(sapply(list2, function(y) all(x %in% y)))))
 }
 
 remove_contained_lists <- function(list_of_lists) {
   result <- list_of_lists
+  ind<-numeric()
   for (i in seq_along(list_of_lists)) {
     for (j in seq_along(list_of_lists)) {
-      if (i != j && list_contains(list_of_lists[[i]],list_of_lists[[j]])) {
-        result[[i]] <- NULL
-        break
-      }
+      if (i != j & list_contains(list_of_lists[[i]],list_of_lists[[j]])) {ind<-c(ind,i)}
     }
   }
-  result <- result[!sapply(result, is.null)]
+  result <- result[-ind]
   return(result)
 }
 
@@ -208,11 +207,31 @@ create_CatInt_groups <- function(vectors) {
     groups[[i]] <- vectors[sapply(vectors, function(vec) char_entry %in% vec)]
   }
 
-  groups <- groups[lengths(groups) > 0]
+  groups <- unique(lapply(do.call(c,groups[lengths(groups) > 0]),unname))
 
-  unique_groups <- remove_contained_lists(unique(groups))
+  unique_groups <- remove_contained_lists(groups)
 
   return(unique_groups)
+}
+
+
+merge_vectors <- function(list_of_vectors) {
+  result <- list_of_vectors
+  merged <- logical(length(list_of_vectors))
+
+  for (i in seq_along(list_of_vectors)) {
+    if (!merged[i]) {
+      for (j in seq_along(list_of_vectors)) {
+        if (i != j && any(list_of_vectors[[i]] %in% list_of_vectors[[j]])) {
+          result[[i]] <- union(result[[i]], result[[j]])
+          merged[j] <- TRUE
+        }
+      }
+    }
+  }
+
+  result <- result[!merged]
+  return(result)
 }
 
 
