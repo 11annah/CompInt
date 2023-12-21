@@ -3,7 +3,7 @@
 #' This function extracts the linear predictor from a model formula and formats it as a string.
 #'
 #' @param mod A model object of class "CompInt".
-#' @param reg_of_interest The regressor of interest. If specified, the original regressor name in the linear predictor will be replaced with "RI".
+#' @param reg_of_interest The regressor of interest. Only relevant when separate_interactions=TRUE. #TOFIX
 #' @param separate_interactions Logical, indicating whether interaction terms should be denoted and treated as a separate regressor.
 #'
 #' @return A character string representing the linear predictor.
@@ -54,10 +54,25 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
                              coefficient = model_coefficients[i],
                              categorical_element = unlist(sapply(unlist(strsplit(REG,INT_notation)),function(x)wich_reg_is_involved("categorical",mod,x))),
                              metric_element = unlist(sapply(unlist(strsplit(REG,INT_notation)),function(x)wich_reg_is_involved("metric",mod,x)))
-    )
+    )}
+
+  if(!length(mod[["model_specification"]][["regs"]][["categorical"]])==0){
+  vectorize<-numeric()
+  new_terms<-list()
+  catregs<-mod[["model_specification"]][["regs"]][["categorical"]]
+
+  if(any(unlist(lapply(listels_by_name(model_terms,"categorical_element"),length))>1)){
+
+    #TBD
+  }
+
+  for(catreg in nonint_cats){
+    vectorize<-c(vectorize)
+  }
 
   }
-  model_terms<-unlist(lapply(model_terms, `[[`, "model_term"))
+
+  model_terms<-unlist(listels_by_name(list=model_terms,name="model_term"))
   model_terms[2:length(model_terms)]<-paste0("+ ",model_terms[2:length(model_terms)])
 
   linear_predictor<-paste(model_terms,collapse=' ')

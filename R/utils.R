@@ -178,3 +178,11 @@ wich_reg_is_involved<-function(met_or_cat,mod,term){
 }
 
 
+listels_by_name<-function(list,name){lapply(list, `[[`, name)}
+
+
+
+
+
+
+
