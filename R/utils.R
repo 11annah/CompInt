@@ -180,8 +180,40 @@ wich_reg_is_involved<-function(met_or_cat,mod,term){
 
 listels_by_name<-function(list,name){lapply(list, `[[`, name)}
 
+###
+list_contains <- function(list1, list2) {
+  all(sapply(list1, function(x) any(sapply(list2, function(y) all(x %in% y)))))
+}
 
+remove_contained_lists <- function(list_of_lists) {
+  result <- list_of_lists
+  for (i in seq_along(list_of_lists)) {
+    for (j in seq_along(list_of_lists)) {
+      if (i != j && list_contains(list_of_lists[[i]],list_of_lists[[j]])) {
+        result[[i]] <- NULL
+        break
+      }
+    }
+  }
+  result <- result[!sapply(result, is.null)]
+  return(result)
+}
 
+create_CatInt_groups <- function(vectors) {
+  char_entries <- unique(unlist(vectors))
+  groups <- vector("list", length = length(char_entries))
+
+  for (i in seq_along(char_entries)) {
+    char_entry <- char_entries[i]
+    groups[[i]] <- vectors[sapply(vectors, function(vec) char_entry %in% vec)]
+  }
+
+  groups <- groups[lengths(groups) > 0]
+
+  unique_groups <- remove_contained_lists(unique(groups))
+
+  return(unique_groups)
+}
 
 
 
