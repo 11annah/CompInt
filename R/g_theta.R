@@ -68,6 +68,7 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
 
 # Documentation is missing!! #TOFIX !
+#' @export
 make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
   # To be expanded (ideally)
   if(model_type %in% c("GLM","GLMM")){
@@ -80,5 +81,19 @@ make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
   }
   return(g_theta)
 }
+
+
+
+# Documentation is missing!! #TOFIX !
+#' @export
+integrate_wrt_pm<-function(fun){
+  py_fun <- reticulate::r_to_py(fun)
+  reticulate::py_run_file(system.file("inst/python_scripts/test.py"))
+  return(reticulate::py_to_r(output))
+}
+
+
+
+
 
 
