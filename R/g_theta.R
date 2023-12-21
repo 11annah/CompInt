@@ -47,7 +47,8 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
     REG<-names(coefs)[i]
     TERM<-paste0(model_coefficients[i], " * ", REG,"[l]")
-    if(separate_interactions & grepl(reg_of_interest,TERM)){TERM<-stringr::str_replace(TERM,INT_notation,"_x_")
+    if(separate_interactions & !is.null(reg_of_interest)){
+      if(grepl(reg_of_interest,TERM)){TERM<-stringr::str_replace(TERM,INT_notation,"_x_")}
     }else{TERM<-stringr::str_replace(TERM,INT_notation,"[l] * ")}
     model_terms[[j]] <- list(model_term = TERM,
                              regressors = unlist(strsplit(REG,INT_notation)),
@@ -56,33 +57,45 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
                              metric_element = unlist(sapply(unlist(strsplit(REG,INT_notation)),function(x)wich_reg_is_involved("metric",mod,x)))
     )}
 
+  linpred_novec <- merge_linpred_terms(model_terms)
+
+  #The following would be a good check, but we have to check that it does not clash with make_binary
+  #if(!identical(sort(unique(unlist(listels_by_name(model_terms, "categorical_element")))), sort(mod[["model_specification"]][["regs"]][["categorical"]])))){
+  #stop("")}
+
   if(!length(mod[["model_specification"]][["regs"]][["categorical"]])==0){
   catTERMS<-listels_by_name(model_terms,"categorical_element")
   index<-which(lengths(catTERMS)>0)
   catTERMS<-catTERMS[index]
 
-  #make groups
-  vectorize<-model_terms[index]
-
+  vectorized<-model_terms[index]
   vec_groups<-merge_vectors(create_CatInt_groups(catTERMS))
 
-
+  nonint_cats<-vec_groups[which(lengths(vec_groups)==1)]
+  int_cats<-vec_groups[which(lengths(vec_groups)!=1)]
+  #if(any(unlist(lapply(l2,function(x)lapply(l,function(y)x%in%y))))){stop("There is a problem with the separation of categorical regressors into those that appear in interactions and those that do not. Please check the model specifications and regressor names.")}
 
   new_terms<-list()
-  #The following would be a good check, but we have to check that it does not clash with make_binary
-  #if(!identical(sort(unique(unlist(listels_by_name(model_terms, "categorical_element")))), sort(mod[["model_specification"]][["regs"]][["categorical"]])))){
-  #stop("")}
+  if(length(unlist(nonint_cats))>0){}
+  if(length(unlist(int_cats))>0){}
+  ###TBD!!!!
 
   #split by "*" to make vectors - add 1s where necessary - go by length
 
+  index<-c(index)#,...) #ADD the metric terms that are included in categorical interactions
   }
 
 
-  ##Important: return BOTH original AND %*% versions!!!!!!!
-  model_terms<-unlist(listels_by_name(list=model_terms,name="model_term"))
-  model_terms[2:length(model_terms)]<-paste0("+ ",model_terms[2:length(model_terms)])
+  if (exists("vectorized", envir = environment())){
+    ex_intercept<-ifelse(mod[["model_specification"]][["intercept"]],1,NULL)
+    vecmet_model_terms <- model_terms[-c(ex_intercept,index)]
+    linpred_terms<-c(model_terms[ex_intercept],new_terms,vecmet_model_terms)
+  }else{
+    linpred_terms <- model_terms
+  }
 
-  linear_predictor<-paste(model_terms,collapse=' ')
+  linear_predictor <- list(vectorized=merge_linpred_terms(linpred_terms),
+    non_vectorized=linpred_novec)
 
 
   return(linear_predictor)

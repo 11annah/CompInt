@@ -194,7 +194,7 @@ remove_contained_lists <- function(list_of_lists) {
       if (i != j & list_contains(list_of_lists[[i]],list_of_lists[[j]])) {ind<-c(ind,i)}
     }
   }
-  result <- result[-ind]
+  if(length(ind)!=0){result <- result[-ind]}
   return(result)
 }
 
@@ -233,6 +233,15 @@ merge_vectors <- function(list_of_vectors) {
   result <- result[!merged]
   return(result)
 }
+
+
+merge_linpred_terms <- function(termlist){
+termlist<-unlist(listels_by_name(list=termlist,name="model_term"))
+termlist[2:length(termlist)]<-paste0("+ ",termlist[2:length(termlist)])
+return(paste(termlist,collapse=' '))
+}
+
+
 
 
 
