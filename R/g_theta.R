@@ -63,40 +63,25 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
   #if(!identical(sort(unique(unlist(listels_by_name(model_terms, "categorical_element")))), sort(mod[["model_specification"]][["regs"]][["categorical"]])))){
   #stop("")}
 
-  if(!length(mod[["model_specification"]][["regs"]][["categorical"]])==0){
-  catTERMS<-listels_by_name(model_terms,"categorical_element")
-  index<-which(lengths(catTERMS)>0)
-  catTERMS<-catTERMS[index]
+  #if(!length(mod[["model_specification"]][["regs"]][["categorical"]])==0){
+  #catTERMS<-listels_by_name(model_terms,"categorical_element")
+  #index<-which(lengths(catTERMS)>0)
+  #catTERMS<-catTERMS[index]
 
-  vectorized<-model_terms[index]
-  vec_groups<-merge_vectors(create_CatInt_groups(catTERMS))
-
-  nonint_cats<-vec_groups[which(lengths(vec_groups)==1)]
-  int_cats<-vec_groups[which(lengths(vec_groups)!=1)]
-  #if(any(unlist(lapply(l2,function(x)lapply(l,function(y)x%in%y))))){stop("There is a problem with the separation of categorical regressors into those that appear in interactions and those that do not. Please check the model specifications and regressor names.")}
-
-  new_terms<-list()
-  if(length(unlist(nonint_cats))>0){}
-  if(length(unlist(int_cats))>0){}
-  ###TBD!!!!
-  ###TBD!!!!
-  ###TBD!!!!
-
-  #split by "*" to make vectors - add 1s where necessary - go by length
-
-  index<-c(index)#,...) #ADD the metric terms that are included in categorical interactions
-  }
+  #vec_groups<-merge_vectors(create_CatInt_groups(catTERMS))
+  #}
+  Test_vec_groups<<-vec_groups
+  test_model_terms<<-model_terms
 
 
-  if (exists("vectorized", envir = environment())){
-    ex_intercept<-ifelse(mod[["model_specification"]][["intercept"]],1,NULL)
-    vecmet_model_terms <- model_terms[-c(ex_intercept,index)]
-    linpred_terms<-c(model_terms[ex_intercept],new_terms,vecmet_model_terms)
-  }else{
-    linpred_terms <- model_terms
-  }
+  SepEls<-unlist(lapply(listels_by_name(test_model_terms,"model_term"),function(x)strsplit(x,"\\*")), recursive = FALSE)
+  theta_vec<-vec_to_c(lapply(SepEls, function(x) x[[1]]))
+  non_thetas<-lapply(SepEls, function(x) x[-1])
+  non_thetas <- non_thetas[-which(lengths(non_thetas))==0]
 
-  linear_predictor <- list(vectorized=merge_linpred_terms(linpred_terms),
+
+
+  linear_predictor <- list(vectorized="TBD",#merge_linpred_terms(linpred_terms),
     non_vectorized=linpred_novec)
 
 

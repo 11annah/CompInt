@@ -248,9 +248,10 @@ vec_to_c<-function(vec){
 vectorized_sum<-function(v1,veclist){
   if(length(veclist)==1){return(paste0(vec_to_c(v1),"%*%",vec_to_c(unlist(veclist))))
   }else{
-    return(paste0(vec_to_c(v1),"%*%(",lapply(l,vec_to_c),")"))
+    return(paste0(vec_to_c(v1),"%*%(",paste(lapply(l,vec_to_c),collapse='*'),")"))
     }
 }
+
 
 
 
