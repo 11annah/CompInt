@@ -241,6 +241,19 @@ termlist[2:length(termlist)]<-paste0("+ ",termlist[2:length(termlist)])
 return(paste(termlist,collapse=' '))
 }
 
+vec_to_c<-function(vec){
+  return(paste0("c(",paste(vec,collapse=","),")"))
+}
+
+vectorized_sum<-function(v1,veclist){
+  if(length(veclist)==1){return(paste0(vec_to_c(v1),"%*%",vec_to_c(unlist(veclist))))
+  }else{
+    return(paste0(vec_to_c(v1),"%*%(",lapply(l,vec_to_c),")"))
+    }
+}
+
+
+
 
 
 
