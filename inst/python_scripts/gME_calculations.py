@@ -17,3 +17,18 @@ def matrix_multiply_with_gradient(vector, matrix):
     input_tensor.grad.zero_()
         
     return gradient
+
+
+def linear_predictor_torch(vector,matrix,fun,option_argument):
+    def inner_function(x):
+        return fun(x,option=option_argument)
+      
+    vec = torch.tensor(vector, dtype=torch.double)#, requires_grad=True)
+    mat = torch.tensor(matrix, dtype=torch.double)
+    x = torch.matmul(vec, torch.prod(mat, dim=1))
+    result = inner_function(x)
+    return result
+
+
+
+
