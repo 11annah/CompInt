@@ -70,15 +70,17 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
   #vec_groups<-merge_vectors(create_CatInt_groups(catTERMS))
   #}
-  Test_vec_groups<<-vec_groups
+
   test_model_terms<<-model_terms
 
 
   SepEls<-unlist(lapply(listels_by_name(test_model_terms,"model_term"),function(x)strsplit(x,"\\*")), recursive = FALSE)
-  theta_vec<-vec_to_c(lapply(SepEls, function(x) x[[1]]))
+  theta_vec<-vec_to_c(lapply(SepEls, function(x) trimwd(x[[1]])))
   non_thetas<-lapply(SepEls, function(x) x[-1])
-  non_thetas <- non_thetas[-which(lengths(non_thetas))==0]
+  non_thetas[which(lengths(non_thetas)==0)]<-"1"
 
+  test_non_thetas<<-non_thetas
+  test_theta_theta_vec<<-theta_vec
 
 
   linear_predictor <- list(vectorized="TBD",#merge_linpred_terms(linpred_terms),

@@ -253,7 +253,15 @@ vectorized_sum<-function(v1,veclist){
 }
 
 
-
+list_to_vecmat<-function(list,groups){
+  Mat<-matrix(1,ncol=length(unlist(list)),nrow=length(list))
+  for(i in seq_along(nrow(Mat))){
+  entry<-list[[i]]
+  for(j in seq_along(length(entry))){Mat[i,j] <- trimws(entry[j])}
+  }
+  Mat<-Mat[,-which(apply(Mat,2,function(x)all(x=="1")))]
+  ###merge by groups!!!
+}
 
 
 
