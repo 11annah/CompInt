@@ -30,5 +30,6 @@ def linear_predictor_torch(vector,matrix,fun,option_argument):
     return result
 
 
-
+####CONTINUE
+### sympy !!!!
 
