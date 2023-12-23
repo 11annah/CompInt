@@ -241,29 +241,56 @@ termlist[2:length(termlist)]<-paste0("+ ",termlist[2:length(termlist)])
 return(paste(termlist,collapse=' '))
 }
 
-vec_to_c<-function(vec){
-  return(paste0("c(",paste(vec,collapse=","),")"))
+vec_to_tensor<-function(vec){
+  return(paste0("torch_cat(list(",paste(paste("torch_tensor(",vec,")", sep = ""),collapse=","),"),dim=1)"))
 }
 
 vectorized_sum<-function(v1,veclist){
-  if(length(veclist)==1){return(paste0(vec_to_c(v1),"%*%",vec_to_c(unlist(veclist))))
+  if(length(veclist)==1){return(paste0("torch_matmul(",vec_to_tensor(v1),",",vec_to_tensor(unlist(veclist)),")"))
   }else{
-    return(paste0(vec_to_c(v1),"%*%(",paste(lapply(l,vec_to_c),collapse='*'),")"))
+    return(paste0("torch_matmul(",vec_to_tensor(v1),",(",paste(lapply(veclist,vec_to_tensor),collapse='*'),"))"))
     }
 }
 
+merge_cols <- function(Mat){
+  result <- character(nrow(Mat))
+  for(i in seq_along(result)){
+    if(all(Mat[i,]=="1")){result[i] <- "1"
+    }else{
+      result[i] <- paste(Mat[i,which(Mat[i,]!="1")],collapse = "*")
+    }}
+  return(result)
+}
 
 list_to_vecmat<-function(list,groups){
-  Mat<-matrix(1,ncol=length(unlist(list)),nrow=length(list))
-  for(i in seq_along(nrow(Mat))){
+  Mat<-matrix("1",ncol=length(unlist(list)),nrow=length(list))
+  for(i in 1:nrow(Mat)){
+  if(i!=1){before<-length(unlist(list[1:(i-1)]))
+  }else{before<-0}
   entry<-list[[i]]
-  for(j in seq_along(length(entry))){Mat[i,j] <- trimws(entry[j])}
+  for(j in 1:length(entry)){
+    dim2<-before+j
+    Mat[i,dim2] <- trimws(entry[j])}
   }
-  Mat<-Mat[,-which(apply(Mat,2,function(x)all(x=="1")))]
-  ###merge by groups!!!
+
+  if(is.null(groups)){
+  result <- Mat
+  }else{
+  for(i in 1:length(groups)){
+    merge_ind <- which(apply(Mat,2,function(x)any(sapply(groups[[i]],function(v)grepl(v,x)))))
+    ToMerge <- Mat[,merge_ind,drop=FALSE]
+    Mat <- cbind(Mat[,-merge_ind,drop=FALSE],merge_cols(ToMerge))
+    }
+  }
+
+  result<-Mat[,-which(apply(Mat,2,function(x)all(x=="1")))]
+  return(result)
 }
 
 
+eval_g_theta_py<-function(){
+  reticulate::source_python("inst/python_scripts/gME_derivative.py")
+}
 
 
 

@@ -63,27 +63,27 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
   #if(!identical(sort(unique(unlist(listels_by_name(model_terms, "categorical_element")))), sort(mod[["model_specification"]][["regs"]][["categorical"]])))){
   #stop("")}
 
-  #if(!length(mod[["model_specification"]][["regs"]][["categorical"]])==0){
-  #catTERMS<-listels_by_name(model_terms,"categorical_element")
-  #index<-which(lengths(catTERMS)>0)
-  #catTERMS<-catTERMS[index]
+  if(!length(mod[["model_specification"]][["regs"]][["categorical"]])==0){
+  catTERMS<-listels_by_name(model_terms,"categorical_element")
+  index<-which(lengths(catTERMS)>0)
+  catTERMS<-catTERMS[index]
 
-  #vec_groups<-merge_vectors(create_CatInt_groups(catTERMS))
-  #}
+  vec_groups<-merge_vectors(create_CatInt_groups(catTERMS))
+  }else{
+    vec_groups<-NULL
+  }
 
-  test_model_terms<<-model_terms
-
-
-  SepEls<-unlist(lapply(listels_by_name(test_model_terms,"model_term"),function(x)strsplit(x,"\\*")), recursive = FALSE)
-  theta_vec<-vec_to_c(lapply(SepEls, function(x) trimwd(x[[1]])))
+  SepEls<-unlist(lapply(listels_by_name(model_terms,"model_term"),function(x)strsplit(x,"\\*")), recursive = FALSE)
   non_thetas<-lapply(SepEls, function(x) x[-1])
   non_thetas[which(lengths(non_thetas)==0)]<-"1"
 
-  test_non_thetas<<-non_thetas
-  test_theta_theta_vec<<-theta_vec
+  M <- list_to_vecmat(non_thetas,vec_groups)
 
+  #VecSum<-vectorized_sum(v1=lapply(SepEls,function(x) trimws(x[[1]])),
+                         #veclist=lapply(seq_len(ncol(M)), function(i) M[, i]))
 
-  linear_predictor <- list(vectorized="TBD",#merge_linpred_terms(linpred_terms),
+  linear_predictor <- list(vectorized=list(thetas=unlist(lapply(SepEls,function(x) trimws(x[[1]]))),
+                                           matrix=M),
     non_vectorized=linpred_novec)
 
 
@@ -93,15 +93,21 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
 # Documentation is missing!! #TOFIX !
 #' @export
-make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
+make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,vectorized=TRUE,...){
   # To be expanded (ideally)
   if(model_type %in% c("GLM","GLMM")){
     if(is.null(linear_predictor)){stop("Models of type 'GLM' and 'GLMM' require a linear predictor.")}
+    if(isFALSE(vectorized)){
     if(is.null(inverse_link)){
-      g_theta<-linear_predictor
+      g_theta<-linear_predictor$non_vectorized
       warning("No inverse link function was specified, which is generally not intended. Returning linear predictor.")
-    }else{
-      g_theta<-paste0(inverse_link,"(",linear_predictor,")")}
+    }else{g_theta<-paste0(inverse_link,"(",linear_predictor$non_vectorized,")")}
+  }else{
+    if(is.null(inverse_link)){
+      g_theta<-paste0("sapply(l,function(l)",linear_predictor$vectorized,")")
+      warning("No inverse link function was specified, which is generally not intended. Returning linear predictor.")
+    }else{g_theta<-paste0(inverse_link,"(",paste0("sapply(l,function(l)",linear_predictor$vectorized,")"),")")}
+    }
   }
   return(g_theta)
 }
@@ -112,7 +118,7 @@ make_g_theta<-function(model_type,linear_predictor=NULL,inverse_link=NULL,...){
 #' @export
 integrate_wrt_pm<-function(fun){
   py_fun <- reticulate::r_to_py(fun)
-  tochquad <- reticulate::import("torchquad")
+  #tochquad <- reticulate::import("torchquad")
   reticulate::source_python("inst/python_scripts/test.py")
   add(5,10)
   #return(reticulate::py_to_r(output))

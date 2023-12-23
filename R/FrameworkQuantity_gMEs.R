@@ -14,7 +14,7 @@ eval(ChunkList$getting_situated)
 
 
     eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,",reg_of_interest,"=NULL){",
-                                make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,...)
+                                make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,vectorized=FALSE,...)
                                 ,"}")))
 
 if(integration=="empirical"){
