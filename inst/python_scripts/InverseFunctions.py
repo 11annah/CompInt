@@ -1,13 +1,21 @@
 import torch
 from torch import exp, minimum, maximum, erf, sqrt
 
-def identity(x):
-    return x
+from scipy.stats import norm
 
-def torch_plogis(x):
-    return 1 / (1 + exp(-x))
+def link_function(x,option):
+    x=torch.tensor(x,dtype=torch.double)
+  
+    if option == "id":
+        return x.numpy()
 
-def torch_inv_probit(eta):
-    thresh = -norm.ppf(2.220446049250313e-16)  # Equivalent to qnorm(.Machine$double.eps) in R
-    eta = minimum(maximum(eta, -thresh), thresh)
-    return 0.5 * (1 + erf(eta / sqrt(2)))
+    if option == "torch_plogis":
+        result = 1 / (1 + exp(-x))
+        return result.numpy()
+
+    if option == "torch_inv_probit":
+        epsilon = 2.220446049250313e-16
+        thresh = -torch.tensor(norm.ppf(epsilon), dtype=torch.double)
+        x = torch.minimum(torch.maximum(x, -thresh), thresh)
+        result = 0.5 * (1 + torch.erf(x / sqrt(torch.tensor(2.0, dtype=torch.double))))
+        return result.numpy()

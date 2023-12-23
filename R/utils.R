@@ -279,10 +279,6 @@ list_to_vecmat<-function(list,groups){
 }
 
 
-eval_g_theta_py<-function(){
-  reticulate::source_python("inst/python_scripts/gME_calculations.py")
-}
-
 
 ###Do I even still need these??
 
