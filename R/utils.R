@@ -243,18 +243,21 @@ return(paste(termlist,collapse=' '))
 
 
 
-merge_cols <- function(Mat){
+merge_cols <- function(Mat,indexing){
   result <- character(nrow(Mat))
+  regnames <- character()
   for(i in seq_along(result)){
     if(all(Mat[i,]=="1")){result[i] <- "1"
     }else{
       result[i] <- paste(Mat[i,which(Mat[i,]!="1")],collapse = "*")
+      regnames <- unique(c(regnames,unname(sapply(trimws(Mat[i,which(Mat[i,]!="1")]),function(x)gsub(gsub("([][\\^$.|?*+()])", "\\\\\\1", indexing, perl=TRUE),"",x)))))
     }}
-  return(result)
+  return(list(result,regnames))
 }
 
-list_to_vecmat<-function(list,groups){
+list_to_vecmat<-function(list,groups,indexing){
   Mat<-matrix("1",ncol=length(unlist(list)),nrow=length(list))
+  regname_list <- list()
   for(i in 1:nrow(Mat)){
   if(i!=1){before<-length(unlist(list[1:(i-1)]))
   }else{before<-0}
@@ -264,20 +267,42 @@ list_to_vecmat<-function(list,groups){
     Mat[i,dim2] <- trimws(entry[j])}
   }
 
+  origMat <- Mat
   if(is.null(groups)){
   result <- Mat
   }else{
   for(i in 1:length(groups)){
     merge_ind <- which(apply(Mat,2,function(x)any(sapply(groups[[i]],function(v)grepl(v,x)))))
     ToMerge <- Mat[,merge_ind,drop=FALSE]
-    Mat <- cbind(Mat[,-merge_ind,drop=FALSE],merge_cols(ToMerge))
+    merge_cols_res <- merge_cols(ToMerge,indexing)
+    regname_list[[i]] <- merge_cols_res[[2]]
+    Mat <- cbind(Mat[,-merge_ind,drop=FALSE],merge_cols_res[[1]])
     }
   }
-
-  result<-Mat[,-which(apply(Mat,2,function(x)all(x=="1")))]
-  return(result)
+  orig_cols<- which(apply(Mat, 2, function(col) any(apply(origMat, 2, function(check) all(col == check)))))
+  if(length(orig_cols)>0){
+    cols <- unique(c(Mat[,orig_cols]))
+    cols <- sapply(cols[-which(cols=="1")],function(x)gsub(gsub("([][\\^$.|?*+()])", "\\\\\\1", indexing, perl=TRUE),"",x))
+    for(i in seq_along(cols)){
+      if(length(col)>0){regname_list<-c(list(cols[i]),regname_list)}
+    }
+  }
+  regname_list <- lapply(regname_list,unname)
+  result<-apply(Mat, c(1, 2),function(x)gsub(gsub("([][\\^$.|?*+()])", "\\\\\\1", indexing, perl=TRUE),"",x))
+  return(list(result,regname_list))
 }
 
 
+
+replace_values <- f<- function(char_list, row_values) {
+  return_list <- list()
+  attach_silent_wrapper(data=as.data.frame(row_values),code="
+                        for(i in 1:length(char_list)){
+                        return_list[[i]] <- eval(parse(text=
+                        paste0('c(',paste(char_list[[i]],collapse=','),')')
+                        ))
+                        }")
+  return(return_list)
+}
 
 

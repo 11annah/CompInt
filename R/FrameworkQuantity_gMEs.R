@@ -12,9 +12,6 @@ eval(ChunkList$getting_situated)
 
     eval(ChunkList$getting_inverse)
 
-    #reticulate::source_python("inst/python_scripts/InverseFunctions.py")
-    #reticulate::source_python("inst/python_scripts/gME_calculations.py")
-
     eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,",reg_of_interest,"=NULL){",
                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,vectorized=FALSE,...)
                                 ,"}")))
