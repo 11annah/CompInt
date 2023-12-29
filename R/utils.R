@@ -280,18 +280,4 @@ list_to_vecmat<-function(list,groups){
 
 
 
-###Do I even still need these??
-
-vec_to_tensor<-function(vec){
-  return(paste0("torch_cat(list(",paste(paste("torch_tensor(",vec,")", sep = ""),collapse=","),"),dim=1)"))
-}
-
-vectorized_sum<-function(v1,veclist){
-  if(length(veclist)==1){return(paste0("torch_matmul(",vec_to_tensor(v1),",",vec_to_tensor(unlist(veclist)),")"))
-  }else{
-    return(paste0("torch_matmul(",vec_to_tensor(v1),",(",paste(lapply(veclist,vec_to_tensor),collapse='*'),"))"))
-  }
-}
-
-
 

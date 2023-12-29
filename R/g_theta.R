@@ -45,11 +45,12 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
     if(start==2){j=i}else{j=i+1}
     INT_notation<-paste0("\\",mod[["model_specification"]][["regs"]][["interactions"]][["notation"]])
 
+    indexing <- "[l]"
     REG<-names(coefs)[i]
-    TERM<-paste0(model_coefficients[i], " * ", REG,"[l]")
+    TERM<-paste0(model_coefficients[i], " * ", REG,indexing)
     if(separate_interactions & !is.null(reg_of_interest)){
       if(grepl(reg_of_interest,TERM)){TERM<-stringr::str_replace(TERM,INT_notation,"_x_")}
-    }else{TERM<-stringr::str_replace(TERM,INT_notation,"[l] * ")}
+    }else{TERM<-stringr::str_replace(TERM,INT_notation,paste0(indexing," * "))}
     model_terms[[j]] <- list(model_term = TERM,
                              regressors = unlist(strsplit(REG,INT_notation)),
                              coefficient = model_coefficients[i],
@@ -77,7 +78,7 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
   non_thetas<-lapply(SepEls, function(x) x[-1])
   non_thetas[which(lengths(non_thetas)==0)]<-"1"
 
-  M <- list_to_vecmat(non_thetas,vec_groups)
+  M <- apply(list_to_vecmat(non_thetas,vec_groups), c(1, 2),function(x)gsub(gsub("([][\\^$.|?*+()])", "\\\\\\1", indexing, perl=TRUE),"",x))
 
   #VecSum<-vectorized_sum(v1=lapply(SepEls,function(x) trimws(x[[1]])),
                          #veclist=lapply(seq_len(ncol(M)), function(i) M[, i]))
