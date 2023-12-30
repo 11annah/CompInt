@@ -306,3 +306,25 @@ replace_values <- f<- function(char_list, row_values) {
 }
 
 
+listify_mat <- function(M,dim,inner_list=FALSE){
+  if(!inner_list){
+    if(dim==1){
+      return(lapply(seq_len(nrow(M)), function(i) M[i,]))}
+    if(dim==2){
+      return(lapply(seq_len(ncol(M)), function(i) M[, i]))}
+  }else{
+    if(dim==1){
+      return(lapply(seq_len(nrow(M)), function(i) as.list(M[i,])))}
+    if(dim==2){
+      return(lapply(seq_len(ncol(M)), function(i) as.list(M[, i])))}
+  }
+}
+
+
+
+
+
+
+
+
+

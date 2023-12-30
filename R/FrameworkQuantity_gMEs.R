@@ -11,6 +11,7 @@ eval(ChunkList$getting_situated)
     linear_predictor<-make_linear_predictor(mod=model,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)
 
     eval(ChunkList$getting_inverse)
+    reticulate::source_python("inst/python_scripts/gME_calculations.py")
 
     eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,",reg_of_interest,"=NULL){",
                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,vectorized=FALSE,...)
@@ -45,16 +46,20 @@ if(integration=="empirical"){
       coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
 
       if(continue_metric){
-        attach_silent_wrapper(data=EmpDat,code=paste0("
-        result<-numeric()
-          for(i in 1:nrow(coef_draws)){
-            RI<-torch_tensor(EmpDat[,which(names(EmpDat)==reg_of_interest)],requires_grad=TRUE)
-            interim<-eval_g_theta_at_point(theta=coef_draws[i,],l=1:nrow(EmpDat),",reg_of_interest,"=RI)
-            interim$retain_grad
-            interim$backward(gradient=torch_tensor(rep(1,nrow(EmpDat))))
-            result[i]<-sum(as.numeric(RI$grad))/nrow(EmpDat)
-          }")
+        result <- apply(coef_draws,1,function(param_draws)sum(apply(EmpDat,1,function(datapoint){
+          pointwise_gME(model,linear_predictor,param_draws,datapoint,reg_of_interest,"met",inverse_link,make_result_LinPred=make_result_LinPred)
+          }))/nrow(EmpDat)
         )
+        #attach_silent_wrapper(data=EmpDat,code=paste0("
+        #result<-numeric()
+        #  for(i in 1:nrow(coef_draws)){
+        #    RI<-torch_tensor(EmpDat[,which(names(EmpDat)==reg_of_interest)],requires_grad=TRUE)
+        #    interim<-eval_g_theta_at_point(theta=coef_draws[i,],l=1:nrow(EmpDat),",reg_of_interest,"=RI)
+        #    interim$retain_grad
+        #    interim$backward(gradient=torch_tensor(rep(1,nrow(EmpDat))))
+        #    result[i]<-sum(as.numeric(RI$grad))/nrow(EmpDat)
+        #  }")
+        #)
       }
 
       if(continue_categorical){

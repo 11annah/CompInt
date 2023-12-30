@@ -73,10 +73,44 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
 #Calculate gME for one point
 
-pointwise_gME <- function(mod, point){
-  reticulate::source_python("inst/python_scripts/InverseFunctions.py")
-  reticulate::source_python("inst/python_scripts/gME_calculations.py")
+pointwise_gME <- function(mod, LinPred, param_draw, point, reg_of_interest, cat_or_met, inverse_link,make_result_LinPred){
+  point = as.data.frame(t(c(point)))
+  vec_list <- lapply(LinPred$reg_groups,function(x)list(x))
+  Mat <- LinPred[["vectorized"]][["matrix"]]
+
+  if(cat_or_met=="cat"){
+    ### THIS IS THE PART THAT NEEDS TO BE CHANGED FOR INTERACTIONS #TOFIX
+    RIvals_prep<-dealing_with_catRI(dat=point,RIcat_raw=RIcat_raw,g_theta=LinPred$non_vectorized,RIname=reg_of_interest)
+    RIvals<-RIvals_prep[["vals"]]
+    ref_cat<-RIvals_prep[["ref_cat"]]
+    nonref_cats<-RIvals_prep[["nonref_cats"]]
+    RIname <- nonref_cats
+  }else{
+  RIname <- reg_of_interest}
+  RIentry <- LinPred$reg_groups[[which(unlist(lapply(LinPred$reg_groups,function(x)any(RIname%in% x))))]]
+
+  if(cat_or_met=="met"){
+    gMEs<-numeric()
+    val_list <- lapply(replace_values(vec_list, point),function(x)list(unname(x)))
+    for(i in seq_along(RIentry)){
+      gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list,grad_variable = list(RIentry[i]))#,fun=inverse_link)
+    }
+    names(gMEs) <- RIentry
+  }else{
+    gMEs<-numeric()
+    for(i in seq_along(RIentry)){
+    point_ref <- point_nonref <- point
+    point_ref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[ref_cat]]))
+    point_nonref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[RIentry[i]]]))
+    val_list_nonref <- lapply(replace_values(vec_list, point_nonref),function(x)list(unname(x)))
+    val_list_ref <- lapply(replace_values(vec_list, point_ref),function(x)list(unname(x)))
+    gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list_nonref,val_list2 = val_list_ref,fun=inverse_link)
+    }
+  names(gMEs) <- RIentry
+  }
+  return(gMEs)
 }
+
 
 
 
