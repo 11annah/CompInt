@@ -47,7 +47,7 @@ if(integration=="empirical"){
 
       if(continue_metric){
         result <- apply(coef_draws,1,function(param_draws)sum(apply(EmpDat,1,function(datapoint){
-          pointwise_gME(model,linear_predictor,param_draws,datapoint,reg_of_interest,"met",inverse_link,make_result_LinPred=make_result_LinPred)
+          pointwise_gME(model,linear_predictor,param_draws,datapoint,reg_of_interest,"met",inverse_link = inv_link,make_result_LinPred=make_result_LinPred)
           }))/nrow(EmpDat)
         )
         #attach_silent_wrapper(data=EmpDat,code=paste0("

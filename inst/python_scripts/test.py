@@ -17,10 +17,11 @@ def some_function(x):
 mc = MonteCarlo()
 
 # Compute the function integral by sampling 10000 points over domain
-integral_value = mc.integrate(
+def integral_value(some_function):
+   mc.integrate(
     some_function,
     dim=2,
     N=10000,
     integration_domain=[[0, 1], [-1, 1]],
     backend="torch",
-)
+    )

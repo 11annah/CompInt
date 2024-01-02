@@ -93,7 +93,7 @@ pointwise_gME <- function(mod, LinPred, param_draw, point, reg_of_interest, cat_
     gMEs<-numeric()
     val_list <- lapply(replace_values(vec_list, point),function(x)list(unname(x)))
     for(i in seq_along(RIentry)){
-      gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list,grad_variable = list(RIentry[i]))#,fun=inverse_link)
+      gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list,grad_variable = list(RIentry[i]),fun=inverse_link)
     }
     names(gMEs) <- RIentry
   }else{
