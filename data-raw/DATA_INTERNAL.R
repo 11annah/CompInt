@@ -33,10 +33,8 @@ ChunkList <- list(
     if(!"inverse_link"%in%ellipsisvars){
       if(!model[["model_specification"]][["family"]][["Link"]] %in% Inverse.Functions[["Link"]]){
         stop("Unfortunately, there is no default inverse link function for the given model's Link='",model[["model_specification"]][["family"]][["Link"]],"'.\n Please specify the variable 'inverse_link' in the function call")
-      }else{inverse_link<-Inverse.Functions[["Inverse"]][which(Inverse.Functions[["Link"]]==model[["model_specification"]][["family"]][["Link"]])]
-    reticulate::source_python("inst/python_scripts/InverseFuntions.py")
-    inv_link <- make_inv_link_function(inverse_link)
-    }}
+      }else{inverse_link<-Inverse.Functions[["Inverse"]][which(Inverse.Functions[["Link"]]==model[["model_specification"]][["family"]][["Link"]])]}
+    }
   })
 )
 

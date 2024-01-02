@@ -73,8 +73,9 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
 #Calculate gME for one point
 
-pointwise_gME <- function(mod, LinPred, param_draw, point, reg_of_interest, cat_or_met, inverse_link,make_result_LinPred){
-  point = as.data.frame(t(c(point)))
+empirical_gME_per_draw <- function(mod, LinPred, param_draw, data, reg_of_interest, cat_or_met, inverse_link,make_result_LinPred_emp){
+  rownames(data) <- NULL
+  points <- apply(data,1,function(x)vec = as.data.frame(t(c(x))))
   vec_list <- lapply(LinPred$reg_groups,function(x)list(x))
   Mat <- LinPred[["vectorized"]][["matrix"]]
 
@@ -91,9 +92,10 @@ pointwise_gME <- function(mod, LinPred, param_draw, point, reg_of_interest, cat_
 
   if(cat_or_met=="met"){
     gMEs<-numeric()
-    val_list <- lapply(replace_values(vec_list, point),function(x)list(unname(x)))
+    val_lists <- lapply(points,function(x)replace_values(vec_list, x))
+    print(val_lists)
     for(i in seq_along(RIentry)){
-      gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list,grad_variable = list(RIentry[i]),fun=inverse_link)
+      gMEs[i] <- make_result_LinPred_emp(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_lists = val_lists,grad_variable = list(RIentry[i]),fun=reticulate::r_to_py(inverse_link))
     }
     names(gMEs) <- RIentry
   }else{
@@ -102,9 +104,9 @@ pointwise_gME <- function(mod, LinPred, param_draw, point, reg_of_interest, cat_
     point_ref <- point_nonref <- point
     point_ref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[ref_cat]]))
     point_nonref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[RIentry[i]]]))
-    val_list_nonref <- lapply(replace_values(vec_list, point_nonref),function(x)list(unname(x)))
-    val_list_ref <- lapply(replace_values(vec_list, point_ref),function(x)list(unname(x)))
-    gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list_nonref,val_list2 = val_list_ref,fun=inverse_link)
+    val_list_nonref <- lapply(replace_values(vec_list, point_nonref),as.list)
+    val_list_ref <- lapply(replace_values(vec_list, point_ref),as.list)
+    gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list_nonref,val_list2 = val_list_ref,fun=reticulate::r_to_py(inverse_link))
     }
   names(gMEs) <- RIentry
   }

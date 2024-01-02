@@ -301,6 +301,7 @@ replace_values <- f<- function(char_list, row_values) {
                         return_list[[i]] <- eval(parse(text=
                         paste0('c(',paste(char_list[[i]],collapse=','),')')
                         ))
+                        names(return_list[[i]]) <- char_list[[i]]
                         }")
   return(return_list)
 }
