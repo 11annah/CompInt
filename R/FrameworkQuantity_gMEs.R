@@ -47,7 +47,7 @@ if(integration=="empirical"){
 
       if(continue_metric){
         result <- apply(coef_draws,1,function(param_draws){
-          empirical_gME_per_draw(model,linear_predictor,param_draws,EmpDat,reg_of_interest,"met",inverse_link,make_result_LinPred_emp=make_result_LinPred_emp)
+          empirical_gME_per_draw(model,linear_predictor,param_draws,EmpDat,reg_of_interest,"met",inverse_link,make_result_LinPred_emp=make_result_LinPred_emp,assumption=assumption)
           }
         )
         #attach_silent_wrapper(data=EmpDat,code=paste0("

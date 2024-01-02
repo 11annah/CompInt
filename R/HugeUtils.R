@@ -73,7 +73,7 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
 #Calculate gME for one point
 
-empirical_gME_per_draw <- function(mod, LinPred, param_draw, data, reg_of_interest, cat_or_met, inverse_link,make_result_LinPred_emp){
+empirical_gME_per_draw <- function(mod, LinPred, param_draw, data, reg_of_interest, cat_or_met, inverse_link,make_result_LinPred_emp,assumption){
   rownames(data) <- NULL
   points <- apply(data,1,function(x)vec = as.data.frame(t(c(x))))
   vec_list <- lapply(LinPred$reg_groups,function(x)list(x))
@@ -101,11 +101,13 @@ empirical_gME_per_draw <- function(mod, LinPred, param_draw, data, reg_of_intere
   }else{
     gMEs<-numeric()
     for(i in seq_along(RIentry)){
+    ### ATTENTION; For assumption II'' we need a separate case
+    ## #TOFIX
     point_ref <- point_nonref <- point
     point_ref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[ref_cat]]))
     point_nonref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[RIentry[i]]]))
-    val_list_nonref <- lapply(replace_values(vec_list, point_nonref),as.list)
-    val_list_ref <- lapply(replace_values(vec_list, point_ref),as.list)
+    val_list_nonref <- lapply(points_nonref,replace_values(vec_list, x))
+    val_list_ref <-replace_values(vec_list, point_ref)
     gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list_nonref,val_list2 = val_list_ref,fun=reticulate::r_to_py(inverse_link))
     }
   names(gMEs) <- RIentry
