@@ -93,7 +93,6 @@ empirical_gME_per_draw <- function(mod, LinPred, param_draw, data, reg_of_intere
   if(cat_or_met=="met"){
     gMEs<-numeric()
     val_lists <- lapply(points,function(x)replace_values(vec_list, x))
-    print(val_lists)
     for(i in seq_along(RIentry)){
       gMEs[i] <- make_result_LinPred_emp(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_lists = val_lists,grad_variable = list(RIentry[i]),fun=reticulate::r_to_py(inverse_link))
     }

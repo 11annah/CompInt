@@ -19,7 +19,6 @@ def create_matrix_function_emp(Mat, vec_list, grad_variable=None):
        
   if grad_variable is not None:
      def matrix_function(val_list):
-            print("val_list:",val_list)
             index = vec_list.index(grad_variable)
             removed_vec_list = vec_list.pop(index)
             gradv_val = val_list.pop(index)
@@ -55,8 +54,6 @@ def create_matrix_function_emp(Mat, vec_list, grad_variable=None):
 def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_list2=None,grad_variable=None,fun=None):
     matfun = create_matrix_function_emp(Mat=Mat, vec_list=vec_list, grad_variable=grad_variable)
     torched_thetas = torch.tensor(thetas, dtype=torch.double)
-    
-    print("val_lists:",val_lists)
     
     if grad_variable is None:
       if val_list2 is not None:
