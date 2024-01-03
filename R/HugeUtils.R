@@ -73,7 +73,7 @@ make_linear_predictor<-function(mod,reg_of_interest=NULL,separate_interactions=F
 
 #Calculate gME for one point
 
-empirical_gME_per_draw <- function(mod, LinPred, param_draw, data, reg_of_interest, cat_or_met, inverse_link,make_result_LinPred_emp,assumption){
+empirical_gME_per_draw <- function(mod, LinPred, param_draws, data, reg_of_interest, cat_or_met, inverse_link,make_result_LinPred_emp,assumption){
   rownames(data) <- NULL
   points <- apply(data,1,function(x)vec = as.data.frame(t(c(x))))
   vec_list <- lapply(LinPred$reg_groups,function(x)list(x))
@@ -91,12 +91,15 @@ empirical_gME_per_draw <- function(mod, LinPred, param_draw, data, reg_of_intere
   RIentry <- LinPred$reg_groups[[which(unlist(lapply(LinPred$reg_groups,function(x)any(RIname%in% x))))]]
 
   if(cat_or_met=="met"){
-    gMEs<-numeric()
     val_lists <- lapply(points,function(x)replace_values(vec_list, x))
+    system.time(result <- apply(param_draws,1,function(param_draw){
+    gMEs<-numeric()
     for(i in seq_along(RIentry)){
       gMEs[i] <- make_result_LinPred_emp(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_lists = val_lists,grad_variable = list(RIentry[i]),fun=reticulate::r_to_py(inverse_link))
     }
     names(gMEs) <- RIentry
+    return(gMEs)}
+    ))
   }else{
     gMEs<-numeric()
     for(i in seq_along(RIentry)){
@@ -111,7 +114,7 @@ empirical_gME_per_draw <- function(mod, LinPred, param_draw, data, reg_of_intere
     }
   names(gMEs) <- RIentry
   }
-  return(gMEs)
+  return(result)
 }
 
 

@@ -46,10 +46,8 @@ if(integration=="empirical"){
       coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
 
       if(continue_metric){
-        result <- apply(coef_draws,1,function(param_draws){
-          empirical_gME_per_draw(model,linear_predictor,param_draws,EmpDat,reg_of_interest,"met",inverse_link,make_result_LinPred_emp=make_result_LinPred_emp,assumption=assumption)
-          }
-        )
+        result <- empirical_gME_per_draw(model,linear_predictor,param_draws=coef_draws,EmpDat,reg_of_interest,"met",inverse_link,make_result_LinPred_emp=make_result_LinPred_emp,assumption=assumption)
+
         #attach_silent_wrapper(data=EmpDat,code=paste0("
         #result<-numeric()
         #  for(i in 1:nrow(coef_draws)){

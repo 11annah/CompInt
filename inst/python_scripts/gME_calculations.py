@@ -51,7 +51,7 @@ def create_matrix_function_emp(Mat, vec_list, grad_variable=None):
 
 
   
-def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_list2=None,grad_variable=None,fun=None):
+def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_list2=None,grad_variable=None,fun=None,pred=False):
     matfun = create_matrix_function_emp(Mat=Mat, vec_list=vec_list, grad_variable=grad_variable)
     torched_thetas = torch.tensor(thetas, dtype=torch.double)
     
@@ -68,8 +68,15 @@ def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_list2=None,grad
       for val_list in val_lists:
         Matfun1 = matfun(val_list)
         prod1 = torch.dot(torched_thetas, torch.prod(Matfun1, dim=1))
-        res1 = eval(f'{fun}(prod1)') if fun is not None else prod1
-        values.append(res1-res2)
+        
+        if fun is None:
+          res1 = prod1
+        else:
+          inv_link_fun = make_inv_link_function(fun)
+          res1 = inv_link_fun(prod1)
+          
+        new_value = res1-res2
+        values.append(new_value.item())
       
     else:
       values = []
@@ -86,15 +93,24 @@ def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_list2=None,grad
         stacked_prod = torch.stack([tensor for sublist in prod for tensor in sublist])
         
         sum_prod = stacked_prod.sum()
-      
-        if fun is not None:
-          inv_link_fun = make_inv_link_function(fun)
-          res = inv_link_fun(sum_prod)
+        
+        if(pred):
+          if fun is not None:
+            inv_link_fun = make_inv_link_function(fun)
+            new_value = inv_link_fun(sum_prod)
+          else:
+            new_value = sum_prod
         else:
-          res = sum_prod
-        res.backward()
+          if fun is not None:
+            inv_link_fun = make_inv_link_function(fun)
+            res = inv_link_fun(sum_prod)
+          else:
+            res = sum_prod
+            
+          res.backward()
+          new_value = grad_variable_val.grad
 
-        values.append(grad_variable_val.grad.item())
+        values.append(new_value.item())
       
     result = sum(values) / len(values)
     return result
