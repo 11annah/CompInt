@@ -101,18 +101,14 @@ empirical_gME_per_draw <- function(mod, LinPred, param_draws, data, reg_of_inter
     return(gMEs)}
     )
   }else{
+    result <- apply(param_draws,1,function(param_draw){
     gMEs<-numeric()
     for(i in seq_along(RIentry)){
-    ### ATTENTION; For assumption II'' we need a separate case
-    ## #TOFIX
-    point_ref <- point_nonref <- point
-    point_ref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[ref_cat]]))
-    point_nonref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[RIentry[i]]]))
-    val_list_nonref <- lapply(points_nonref,replace_values(vec_list, x))
-    val_list_ref <-replace_values(vec_list, point_ref)
     gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list_nonref,val_list2 = val_list_ref,fun=reticulate::r_to_py(inverse_link))
     }
   names(gMEs) <- RIentry
+  return(gMEs)}
+  )
   }
   return(result)
 }

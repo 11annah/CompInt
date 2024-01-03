@@ -51,15 +51,20 @@ def create_matrix_function_emp(Mat, vec_list, grad_variable=None):
 
 
   
-def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_list2=None,grad_variable=None,fun=None,pred=False):
+def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_lists2=None,grad_variable=None,fun=None,pred=False):
     matfun = create_matrix_function_emp(Mat=Mat, vec_list=vec_list, grad_variable=grad_variable)
     torched_thetas = torch.tensor(thetas, dtype=torch.double)
     
     if grad_variable is None:
       if val_list2 is not None:
-        Matfun2 = matfun(val_list2)
-        prod2 = torch.dot(torched_thetas, torch.prod(Matfun2, dim=1))
-        res2 = eval(f'{fun}(prod2)') if fun is not None else prod2
+        for val_list in val_lists2:
+          Matfun2 = matfun(val_list2)
+          prod2 = torch.dot(torched_thetas, torch.prod(Matfun2, dim=1))
+          if fun is None:
+              res = prod1
+          else:
+              inv_link_fun = make_inv_link_function(fun)
+              res2 = inv_link_fun(prod2)
       else:
         res2 = 0
         
