@@ -324,24 +324,21 @@ listify_mat <- function(M,dim,inner_list=FALSE){
 }
 
 
-val_lists_for_cat_empInt <- function(points,assumption){
+val_lists_for_cat_empInt <- function(points,assumption,RIvals,RIentry,ref_cat,i){
 if(assumption %in% c("A.I","A.II'")){
-
-  point_ref <- point_nonref <- point
-  point_ref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[ref_cat]]))
-  point_nonref[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[RIentry[i]]]))
-  val_list_nonref <- lapply(points_nonref,replace_values(vec_list, x))
-  val_list_ref <-replace_values(vec_list, point_ref)
-
+  points1 <- lapply(points,function(x)x[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[RIentry[i]]])))
+  points2 <- lapply(points,function(x)x[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[ref_cat]])))
 
   val_lists <- lapply(points1,function(x)replace_values(vec_list, x))
   val_lists2 <- lapply(points2,function(x)replace_values(vec_list, x))
 }else{# now for assumption "A.II''"
+  points1 <- points[which(lapply(points,function(x)x[names(RIvals[[RIentry[i]]])] == as.data.frame(t(RIvals[[RIentry[i]]]))))]
+  points2 <- points[which(lapply(points,function(x)x[names(RIvals[[RIentry[i]]])] == as.data.frame(t(RIvals[[ref_cat]]))))]
 
   val_lists <- lapply(points1,function(x)replace_values(vec_list, x))
   val_lists2 <- lapply(points2,function(x)replace_values(vec_list, x))
 }
-return(list(val_lists,vallists2))
+return(list(val_lists,val_lists2))
 }
 
 

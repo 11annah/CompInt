@@ -104,7 +104,10 @@ empirical_gME_per_draw <- function(mod, LinPred, param_draws, data, reg_of_inter
     result <- apply(param_draws,1,function(param_draw){
     gMEs<-numeric()
     for(i in seq_along(RIentry)){
-    gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_list = val_list_nonref,val_list2 = val_list_ref,fun=reticulate::r_to_py(inverse_link))
+    Values <- val_lists_for_cat_empInt(points,assumption,RIvals,RIentry,ref_cat,i)
+    val_list_nonref <- Values[[1]]
+    val_list_ref <- Values[[2]]
+    gMEs[i] <- make_result_LinPred(Mat=listify_mat(Mat,1,inner_list = TRUE), vec_list=vec_list,thetas=param_draw,val_lists = val_list_nonref,val_lists2 = val_list_ref,fun=reticulate::r_to_py(inverse_link))
     }
   names(gMEs) <- RIentry
   return(gMEs)}
