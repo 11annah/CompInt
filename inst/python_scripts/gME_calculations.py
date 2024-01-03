@@ -41,6 +41,8 @@ def create_matrix_function_emp(Mat, vec_list, grad_variable=None):
             # Evaluate the matrix using PyTorch tensors
             processed = [[eval(element, variables) for element in row] for row in evaluated_matrix]
             
+            vec_list.insert(index, removed_vec_list)
+            val_list.insert(index, gradv_val)
             
             return processed, grad_variable_val
        

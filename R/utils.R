@@ -298,11 +298,13 @@ replace_values <- f<- function(char_list, row_values) {
   return_list <- list()
   attach_silent_wrapper(data=as.data.frame(row_values),code="
                         for(i in 1:length(char_list)){
-                        return_list[[i]] <- eval(parse(text=
-                        paste0('c(',paste(char_list[[i]],collapse=','),')')
+                        return_list[[i]] <- list()
+                        for(j in 1:length(unlist(char_list[[i]]))){
+                        return_list[[i]][[j]] <- eval(parse(text=
+                        paste0('c(',paste(unlist(char_list[[i]])[j],collapse=','),')')
                         ))
-                        names(return_list[[i]]) <- char_list[[i]]
-                        }")
+                        names(return_list[[i]])[j] <- unlist(char_list[[i]])[j]
+                        }}")
   return(return_list)
 }
 
