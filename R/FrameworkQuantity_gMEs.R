@@ -11,39 +11,11 @@ eval(ChunkList$getting_situated)
     linear_predictor<-make_linear_predictor(mod=model,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)
 
     eval(ChunkList$getting_inverse)
-    reticulate::source_python("inst/python_scripts/gME_calculations.py")
-
-    eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,",reg_of_interest,"=NULL){",
-                                make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,vectorized=FALSE,...)
-                                ,"}")))
+    eval(ChunkList$preparing_g_theta_calc)
 
 if(integration=="empirical"){
-      regsM<-model[["model_specification"]][["regs"]][["metric"]]
-      regsC<-model[["model_specification"]][["regs"]][["categorical"]]
-
-      Check<-if(is.null(newdata)){model[["data"]]}else{newdata}# potentially #TOFIX when using 'subset'!
-      is.bin<-binary_regs(Check, col=reg_of_interest, catRIbin = catRIbin)
-      if(!is.null(is.bin)){
-        newdata<-is.bin
-        regsM<-regsM[-which(regsM==reg_of_interest)]
-        regsC<-c(regsC,reg_of_interest)
-      }
-
-      continue_metric<-reg_of_interest%in%regsM
-      continue_categorical<-reg_of_interest%in%regsC
-
-      if(continue_categorical){RItype <- "categorical"
-      }else{RItype <- "metric"}
-
-
-      data_asmpt<-data_according_to_assumptions(mod=model,assumption=assumption,newdata=newdata,reg_of_interest=reg_of_interest,RItype=RItype)
-      if(length(regsC)==0 | is.null(data_asmpt)){
-        EmpDat<-data_asmpt
-      }else{
-        if(regsC==reg_of_interest & assumption %in% c("A.I","A.II'")){EmpDat<-data_asmpt}else{
-        EmpDat<-make_dummy_coded_data(mod=model,dat=data_asmpt,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)}}
-
-      coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
+      eval(ChunkList$empirical_Int_catmet_handling)
+      eval(ChunkList$data_asmpt__plus__coef_draws)
 
       if(continue_metric){
         result <- empirical_gME_per_draw(model,linear_predictor,param_draws=coef_draws,EmpDat,reg_of_interest,"met",inverse_link,make_result_LinPred_emp=make_result_LinPred_emp,assumption=assumption)
@@ -74,21 +46,21 @@ if(integration=="empirical"){
 
         if(assumption %in% c("A.I","A.II'")){
         attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat),code="
-        IE_refcat<-categorical_regressor_draws(data=cbind(RIvals[[ref_cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)
+        IE_refcat<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)
         ")
         for(cat in nonref_cats){
         attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat),code="
-        result[cat,]<-categorical_regressor_draws(data=cbind(RIvals[[cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
+        result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
         ")
         }}else{# now for assumption "A.II''"
           all_cats<-c(ref_cat,nonref_cats)
           attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),code="
-          IE_refcat<-categorical_regressor_draws(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)
+          IE_refcat<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)
           ")
           for(cat in nonref_cats){
             other_cats<-all_cats[all_cats != cat]
             attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),code="
-            result[cat,]<-categorical_regressor_draws(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
+            result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
             ")
           }
         }

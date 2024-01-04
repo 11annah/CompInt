@@ -166,7 +166,7 @@ dealing_with_catRI<-function(dat,RIcat_raw,g_theta,RIname="RI"){
 
 }
 
-categorical_regressor_draws<-function(data,coef_draws,f){
+simple_emp_int <- function(data,coef_draws,f){
 apply(coef_draws,1,function(x){sum(f(theta=x,l=1:nrow(data)))/nrow(data)})
 }
 
