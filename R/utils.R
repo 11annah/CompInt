@@ -119,6 +119,7 @@ make_dummy_coded_data<-function(mod,dat,reg_of_interest=NULL,separate_interactio
 
 
 binary_regs <- function(data, col,catRIbin){
+  if(!is.null(col)){
   if(is.numeric(data[[col]])){
     # Check for values other than NA, 0, and 1
     unique_values <- unique(data[[col]][!is.na(data[[col]])])
@@ -141,7 +142,7 @@ Enter C for converting to categorical and N for keeping the variable numeric: "
       return(data=data)
     }
 }}}
-
+}
 
 dealing_with_catRI<-function(dat,RIcat_raw,g_theta,RIname="RI"){
   all_cats <- names(dat)[grepl(RIname,names(dat))]

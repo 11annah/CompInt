@@ -4,14 +4,19 @@ get_gME<-function(model_fit,assumption=NULL,reg_of_interest=NULL,seed=NULL,ndraw
 eval(ChunkList$getting_situated)
 
   if(is.null(reg_of_interest)){stop("In order to calculate gME values, a regressor of interest must be defined using the variable reg_of_interest.")}
-  if(!reg_of_interest%in%regs(model)){stop("'reg_of_interest' must be a variable used for the model specification.")}
+  if(!any(reg_of_interest%in%regs(model))){stop("'reg_of_interest' must be a variable used for the model specification.")}
 
 
   if(model[["type"]] %in% c("GLM","GLMM")){
     linear_predictor<-make_linear_predictor(mod=model,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)
 
     eval(ChunkList$getting_inverse)
-    eval(ChunkList$preparing_g_theta_calc)
+
+
+    reticulate::source_python("inst/python_scripts/gME_calculations.py")
+    eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,",reg_of_interest,"=NULL){",
+                                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,vectorized=FALSE,...)
+                                                 ,"}")))
 
 if(integration=="empirical"){
       eval(ChunkList$empirical_Int_catmet_handling)
@@ -36,10 +41,7 @@ if(integration=="empirical"){
         if("refcat" %in% ellipsisvars){
           #TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
-        RIvals_prep<-dealing_with_catRI(dat=EmpDat,RIcat_raw=RIcat_raw,g_theta=eval_g_theta_at_point,RIname=reg_of_interest)
-        RIvals<-RIvals_prep[["vals"]]
-        ref_cat<-RIvals_prep[["ref_cat"]]
-        nonref_cats<-RIvals_prep[["nonref_cats"]]
+        eval(ChunkList$ prepping_for_catRI)
 
         result<-matrix(nrow=length(nonref_cats),ncol=ndraws)
         rownames(result)<-nonref_cats

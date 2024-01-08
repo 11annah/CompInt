@@ -37,14 +37,6 @@ ChunkList <- list(
     }
   }),
 
-  preparing_g_theta_calc = quote({
-    reticulate::source_python("inst/python_scripts/gME_calculations.py")
-
-    eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,",reg_of_interest,"=NULL){",
-                                                 make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,vectorized=FALSE,...)
-                                                 ,"}")))
-  }),
-
   empirical_Int_catmet_handling = quote({
     regsM<-model[["model_specification"]][["regs"]][["metric"]]
     regsC<-model[["model_specification"]][["regs"]][["categorical"]]
@@ -57,8 +49,13 @@ ChunkList <- list(
       regsC<-c(regsC,reg_of_interest)
     }
 
-    continue_metric<-reg_of_interest%in%regsM
-    continue_categorical<-reg_of_interest%in%regsC
+    if(is.null(reg_of_interest)){
+      continue_metric <- TRUE
+      continue_categorical <- FALSE
+    }else{
+      continue_metric<-reg_of_interest%in%regsM
+      continue_categorical<-reg_of_interest%in%regsC
+    }
 
     if(continue_categorical){RItype <- "categorical"
     }else{RItype <- "metric"}
@@ -73,6 +70,13 @@ ChunkList <- list(
         EmpDat<-make_dummy_coded_data(mod=model,dat=data_asmpt,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)}}
 
     coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
+  }),
+
+  prepping_for_catRI = quote({
+    RIvals_prep<-dealing_with_catRI(dat=EmpDat,RIcat_raw=RIcat_raw,g_theta=eval_g_theta_at_point,RIname=reg_of_interest)
+    RIvals<-RIvals_prep[["vals"]]
+    ref_cat<-RIvals_prep[["ref_cat"]]
+    nonref_cats<-RIvals_prep[["nonref_cats"]]
   })
 )
 
