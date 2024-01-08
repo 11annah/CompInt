@@ -55,6 +55,9 @@ def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_lists2=None,gra
     matfun = create_matrix_function_emp(Mat=Mat, vec_list=vec_list, grad_variable=grad_variable)
     torched_thetas = torch.tensor(thetas, dtype=torch.double)
     
+    if fun is not None:
+        inv_link_fun = make_inv_link_function(fun)
+    
     if grad_variable is None:
       if val_list2 is not None:
         for val_list in val_lists2:
@@ -63,8 +66,7 @@ def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_lists2=None,gra
           if fun is None:
               res = prod1
           else:
-              inv_link_fun = make_inv_link_function(fun)
-              res2 = inv_link_fun(prod2)
+              res = inv_link_fun(prod2)
       else:
         res2 = 0
         
@@ -77,45 +79,48 @@ def make_result_LinPred_emp(Mat, vec_list,thetas, val_lists, val_lists2=None,gra
         if fun is None:
           res1 = prod1
         else:
-          inv_link_fun = make_inv_link_function(fun)
           res1 = inv_link_fun(prod1)
           
         new_value = res1-res2
         values.append(new_value.item())
       
     else:
-      values = []
+      Matfun_list = []
+      grad_variable_vals = []
       for val_list in val_lists:
         Matfun, grad_variable_val = matfun(val_list=val_list)
+        grad_variable_vals.append(grad_variable_val)
       
         if len(Matfun[0])>1:
-          Matfun_prod = [[row[0] * row[1], *row[2:]] for row in Matfun]
-      
-        Matfun_tensors = [torch.tensor(row[0]) if not isinstance(row[0], torch.Tensor) else row[0] for row in Matfun_prod]
-      
-        prod = [[row[0] * row[1]] for row in list(zip(torched_thetas,Matfun_tensors))]
-      
-        stacked_prod = torch.stack([tensor for sublist in prod for tensor in sublist])
-        
-        sum_prod = stacked_prod.sum()
-        
-        if(pred):
-          if fun is not None:
-            inv_link_fun = make_inv_link_function(fun)
-            new_value = inv_link_fun(sum_prod)
-          else:
-            new_value = sum_prod
+          Matfun_prod = [torch.tensor(value[0]) if not isinstance(value[0], torch.Tensor) else value[0] for value in [[row[0] * row[1], *row[2:]] for row in Matfun]]
         else:
-          if fun is not None:
-            inv_link_fun = make_inv_link_function(fun)
-            res = inv_link_fun(sum_prod)
-          else:
-            res = sum_prod
-            
+          Matfun_prod = Matfun
+
+        Matfun_list.append(Matfun_prod)
+      
+      prod_list = [
+            torch.stack([element * theta for element, theta in zip(row, torched_thetas)]) for row in Matfun_list
+      ]
+      
+      LinPred_list = [tensor.sum() for tensor in prod_list]
+
+      if(pred):
+        if fun is not None:
+          res_list = [inv_link_fun(sum) for sum in LinPred_list]
+        else:
+          res_list = LinPred_list
+        values = [tensor.item() for tensor in res_list]
+      else:
+        if fun is not None:
+          res_list = [inv_link_fun(sum) for sum in LinPred_list]
+        else:
+          res_list = LinPred_list
+      
+        values = []
+        for grad_variable_val, res in zip(grad_variable_vals, res_list):
           res.backward()
           new_value = grad_variable_val.grad
-
-        values.append(new_value.item())
+          values.append(new_value.item())
       
     result = sum(values) / len(values)
     return result
