@@ -243,7 +243,6 @@ return(paste(termlist,collapse=' '))
 }
 
 
-
 merge_cols <- function(Mat,indexing){
   result <- character(nrow(Mat))
   regnames <- character()
@@ -251,7 +250,7 @@ merge_cols <- function(Mat,indexing){
     if(all(Mat[i,]=="1")){result[i] <- "1"
     }else{
       result[i] <- paste(Mat[i,which(Mat[i,]!="1")],collapse = "*")
-      regnames <- unique(c(regnames,unname(sapply(trimws(Mat[i,which(Mat[i,]!="1")]),function(x)gsub(gsub("([][\\^$.|?*+()])", "\\\\\\1", indexing, perl=TRUE),"",x)))))
+      regnames <- unique(c(regnames,unname(sapply(trimws(Mat[i,which(Mat[i,]!="1")]),function(x)gsub_complex(indexing,x)))))
     }}
   return(list(result,regnames))
 }
@@ -283,13 +282,13 @@ list_to_vecmat<-function(list,groups,indexing){
   orig_cols<- which(apply(Mat, 2, function(col) any(apply(origMat, 2, function(check) all(col == check)))))
   if(length(orig_cols)>0){
     cols <- unique(c(Mat[,orig_cols]))
-    cols <- sapply(cols[-which(cols=="1")],function(x)gsub(gsub("([][\\^$.|?*+()])", "\\\\\\1", indexing, perl=TRUE),"",x))
+    cols <- sapply(cols[-which(cols=="1")],function(x)gsub_complex(indexing,x))
     for(i in seq_along(cols)){
       if(length(col)>0){regname_list<-c(list(cols[i]),regname_list)}
     }
   }
   regname_list <- lapply(regname_list,unname)
-  result<-apply(Mat, c(1, 2),function(x)gsub(gsub("([][\\^$.|?*+()])", "\\\\\\1", indexing, perl=TRUE),"",x))
+  result<-apply(Mat, c(1, 2),function(x)gsub_complex(indexing,x))
   return(list(result,regname_list))
 }
 

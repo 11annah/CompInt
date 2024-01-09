@@ -13,7 +13,8 @@ eval(ChunkList$getting_situated)
     eval(ChunkList$getting_inverse)
 
 
-    reticulate::source_python("inst/python_scripts/gME_calculations.py")
+    reticulate::source_python("inst/python_scripts/gME_simplegrad.py")
+    #reticulate::source_python("inst/python_scripts/gME_calculations.py")
     eval_g_theta_at_point<-eval(parse(text=paste("function(theta,l,",reg_of_interest,"=NULL){",
                                                  make_g_theta(model_type=model[["type"]],linear_predictor=linear_predictor,inverse_link=inverse_link,vectorized=FALSE,...)
                                                  ,"}")))
@@ -23,7 +24,13 @@ if(integration=="empirical"){
       eval(ChunkList$data_asmpt__plus__coef_draws)
 
       if(continue_metric){
-        result <- empirical_gME_per_draw(model,linear_predictor,param_draws=coef_draws,EmpDat,reg_of_interest,"met",inverse_link,make_result_LinPred_emp=make_result_LinPred_emp,assumption=assumption)
+        result <- apply(coef_draws,1,function(x){
+                       simplegrad(data=EmpDat,LinPred=gsub_complex("[l]",linear_predictor$non_vectorized),thetas=c(0,x),grad_variable=reg_of_interest,fun=inverse_link)
+                       })
+        #simplegrad(data=EmpDat,LinPred=gsub_complex("[l]",linear_predictor$non_vectorized),thetas=unname(cbind(0,coef_draws)),grad_variable=reg_of_interest,fun=inverse_link)
+
+
+        #result <- empirical_gME_per_draw(model,linear_predictor,param_draws=coef_draws,EmpDat,reg_of_interest,"met",inverse_link,make_result_LinPred_emp=make_result_LinPred_emp,assumption=assumption)
 
         #attach_silent_wrapper(data=EmpDat,code=paste0("
         #result<-numeric()
