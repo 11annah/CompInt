@@ -53,24 +53,21 @@ if(integration=="empirical"){
         result<-matrix(nrow=length(nonref_cats),ncol=ndraws)
         rownames(result)<-nonref_cats
 
+        torem <- setdiff(names(EmpDat), nonref_cats)
+
         if(assumption %in% c("A.I","A.II'")){
-        attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat),code="
-        IE_refcat<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)
-        ")
+        IE_refcat<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat[,torem,drop=FALSE]),coef_draws=coef_draws,f=eval_g_theta_at_point)
+
         for(cat in nonref_cats){
-        attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat),code="
-        result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
-        ")
+        result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat[,torem,drop=FALSE]),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
+
         }}else{# now for assumption "A.II''"
           all_cats<-c(ref_cat,nonref_cats)
-          attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),code="
-          IE_refcat<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)
-          ")
+          IE_refcat<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),torem,drop=FALSE]),coef_draws=coef_draws,f=eval_g_theta_at_point)
+
           for(cat in nonref_cats){
             other_cats<-all_cats[all_cats != cat]
-            attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),code="
-            result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
-            ")
+            result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),torem,drop=FALSE]),coef_draws=coef_draws,f=eval_g_theta_at_point)-IE_refcat
           }
         }
       }

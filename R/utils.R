@@ -21,12 +21,12 @@ if(any(contained)){stop(paste0("The name of the regressor(s) '",paste(regs[conta
 
 
 attach_silent_wrapper <- function(data,code) {
-  suppressMessages({suppressWarnings({
-    attach(data,warn.conflicts = FALSE)
+  for (key in colnames(data)) {
+    assign(key, data[[key]], envir = parent.frame())
+  }
     eval(parse(text=code), envir = parent.frame())
-    on.exit(detach(data))
-    })
-    })
+
+  #rm(list = colnames(data))
 }
 
 
@@ -168,7 +168,10 @@ dealing_with_catRI<-function(dat,RIcat_raw,g_theta,RIname="RI"){
 }
 
 simple_emp_int <- function(data,coef_draws,f){
+environment(f) <- environment()
+attach_silent_wrapper(data=data,code="
 apply(coef_draws,1,function(x){sum(f(theta=x,l=1:nrow(data)))/nrow(data)})
+")
 }
 
 
@@ -294,7 +297,7 @@ list_to_vecmat<-function(list,groups,indexing){
 
 
 
-replace_values <- f<- function(char_list, row_values) {
+replace_values <- function(char_list, row_values) {
   return_list <- list()
   attach_silent_wrapper(data=as.data.frame(row_values),code="
                         for(i in 1:length(char_list)){

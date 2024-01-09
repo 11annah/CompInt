@@ -21,9 +21,7 @@ get_IE<-function(model_fit,assumption=NULL,reg_of_interest=NULL,seed=NULL,ndraws
       eval(ChunkList$data_asmpt__plus__coef_draws)
 
       if(continue_metric){
-        attach_silent_wrapper(data=EmpDat, code ="
         result <- simple_emp_int(data=EmpDat,coef_draws=coef_draws,f=eval_g_theta_at_point)
-        ")
       }
 
       if(continue_categorical){
@@ -35,24 +33,22 @@ get_IE<-function(model_fit,assumption=NULL,reg_of_interest=NULL,seed=NULL,ndraws
         result<-matrix(nrow=length(nonref_cats)+1,ncol=ndraws)
         rownames(result)<-c(ref_cat,nonref_cats)
 
+        torem <- setdiff(names(EmpDat), nonref_cats)
+
         if(assumption %in% c("A.I","A.II'")){
-          attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat),code="
-        result[ref_cat,]<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)
-        ")
-          for(cat in nonref_cats){
-            attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat),code="
-        result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat),coef_draws=coef_draws,f=eval_g_theta_at_point)
-        ")
+        result[ref_cat,]<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat[,torem,drop=FALSE]),coef_draws=coef_draws,f=eval_g_theta_at_point)
+
+        for(cat in nonref_cats){
+        result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat[,torem,drop=FALSE]),coef_draws=coef_draws,f=eval_g_theta_at_point)
+
           }}else{# now for assumption "A.II''"
             all_cats<-c(ref_cat,nonref_cats)
-            attach_silent_wrapper(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),code="
-          result[ref_cat,]<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)
-          ")
+            result[ref_cat,]<-simple_emp_int(data=cbind(RIvals[[ref_cat]],EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0),torem,drop=FALSE]),coef_draws=coef_draws,f=eval_g_theta_at_point)
+
             for(cat in nonref_cats){
-              other_cats<-all_cats[all_cats != cat]
-              attach_silent_wrapper(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),code="
-            result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),]),coef_draws=coef_draws,f=eval_g_theta_at_point)
-            ")
+            other_cats<-all_cats[all_cats != cat]
+            result[cat,]<-simple_emp_int(data=cbind(RIvals[[cat]],EmpDat[which(rowSums(EmpDat[other_cats]) == 0),torem,drop=FALSE]),coef_draws=coef_draws,f=eval_g_theta_at_point)
+
             }
           }
       }
