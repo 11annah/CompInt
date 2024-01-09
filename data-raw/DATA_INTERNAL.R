@@ -66,7 +66,7 @@ ChunkList <- list(
     if(length(regsC)==0 | is.null(data_asmpt)){
       EmpDat<-data_asmpt
     }else{
-      if(regsC==reg_of_interest & assumption %in% c("A.I","A.II'")){EmpDat<-data_asmpt}else{
+      if(all(regsC==reg_of_interest) & any(assumption %in% c("A.I","A.II'"))){EmpDat<-data_asmpt}else{
         EmpDat<-make_dummy_coded_data(mod=model,dat=data_asmpt,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions)}}
 
     coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
