@@ -8,6 +8,10 @@ def make_inv_link_function(option):
     if option == "id":
         def inverse_link_function(x):
           return x
+        
+    if option == "torch_exp":
+        def inverse_link_function(x):
+          return(torch.exp(x))
 
     if option == "torch_plogis":
         def inverse_link_function(x):

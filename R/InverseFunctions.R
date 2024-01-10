@@ -2,8 +2,12 @@ id <- function(x) {
   x
 }
 
+torch_exp <- function(x) {
+  exp(x)
+}
+
 torch_plogis <- function(x) {
-  1 / (1 + torch_exp(-x))
+  1 / (1 + exp(-x))
 }
 
 torch_inv_probit <- function(eta) {
