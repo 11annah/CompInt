@@ -16,7 +16,7 @@ def simplegrad(data,LinPred,thetas,grad_variable,fun=None):
   tensor_dict = {key: torch.tensor(value, dtype=torch.float64, requires_grad=True) for key, value in data.items()}
   globals().update(tensor_dict)    
   
-  def grad_for_theta(theta,LinPred,grad_variable,inv_link_fun):
+  def grad_for_theta(theta):
       if inv_link_fun is not None:
         LinPred_val = eval(f'inv_link_fun({LinPred})')
       else:
@@ -32,7 +32,7 @@ def simplegrad(data,LinPred,thetas,grad_variable,fun=None):
 
   #final_res = [grad_for_theta(theta=torch.tensor(entry, dtype=torch.double),LinPred=LinPred,grad_variable=grad_variable,inv_link_fun=inv_link_fun) for entry in thetas]
   
-  final_res = grad_for_theta(theta=torch.tensor(thetas, dtype=torch.double),LinPred=LinPred,grad_variable=grad_variable,inv_link_fun=inv_link_fun)
+  final_res = grad_for_theta(theta=torch.tensor(thetas, dtype=torch.double))
   
   return(final_res)
    
