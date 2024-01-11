@@ -12,7 +12,7 @@ with open('inst/python_scripts/InverseFunctions.py', 'r') as f:
 exec(script_code)
 
 
-def simplegrad(ints,data,LinPred,thetas,fun=None,grad_variable=None):
+def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
   if fun is not None:
     inv_link_fun = make_inv_link_function(fun)
   else:
