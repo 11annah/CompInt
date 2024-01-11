@@ -12,6 +12,6 @@ torch_plogis <- function(x) {
 
 torch_inv_probit <- function(eta) {
   thresh <- -qnorm(.Machine$double.eps)
-  eta <- torch_minimum(torch_maximum(eta, -thresh), thresh)
-  0.5 * (1 + torch_erf(eta / sqrt(2)))
+  eta <- min(max(eta, -thresh), thresh)
+  pnorm(eta)
 }
