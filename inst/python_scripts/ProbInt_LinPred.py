@@ -2,6 +2,7 @@ from functools import reduce
 import operator
 import torch
 from torchquad import MonteCarlo, set_up_backend
+
 set_up_backend("torch", data_type="float32")
 mc = MonteCarlo()
 
