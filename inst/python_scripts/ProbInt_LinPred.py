@@ -1,5 +1,3 @@
-import sys
-sys.dont_write_bytecode = True
 from functools import reduce
 import operator
 from operator import mul
