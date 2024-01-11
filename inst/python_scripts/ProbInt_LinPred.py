@@ -1,8 +1,8 @@
 import sys
 sys.dont_write_bytecode = True
-
 from functools import reduce
 import operator
+from operator import mul
 import torch
 from torchquad import MonteCarlo, set_up_backend
 
@@ -35,10 +35,13 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
     x_dict = dict(zip(ints.keys(), x_values))
     globals().update(x_dict) 
     
+    #So far only Unif #TOFIX
+    norm = reduce(mul, (abs(pair[0] - pair[1]) for pair in domains))
+    
     if inv_link_fun is not None:
-        LinPred_val = eval(f'inv_link_fun({LinPred})')
+        LinPred_val = norm * eval(f'inv_link_fun({LinPred})')
     else:
-        LinPred_val = eval(LinPred)
+        LinPred_val = norm * eval(LinPred)
         
     return(LinPred_val.mean(dim=0))
     
