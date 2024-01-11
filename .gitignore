@@ -2,4 +2,4 @@
 .Rhistory
 .RData
 .Ruserdata
-_pycache/
+__pycache__/
