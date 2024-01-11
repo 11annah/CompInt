@@ -1,3 +1,6 @@
+import sys
+sys.dont_write_bytecode = True
+
 from functools import reduce
 import operator
 import torch
@@ -20,7 +23,11 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
     
   tensor_dict = {key: torch.tensor(value, dtype=torch.float64).view(-1, 1) for key, value in data.items()}
   globals().update(tensor_dict)    
-  
+    
+  global theta
+  global domains
+    
+  theta = torch.tensor([0]+thetas, dtype=torch.double)
   domains=list(ints.values())
   
   def function(x):
