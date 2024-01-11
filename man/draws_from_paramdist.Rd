@@ -27,11 +27,11 @@ This function generates draws from the parameter distribution of a CompInt_model
 \examples{
 \dontrun{
 # Example usage
-glm <- ###some GLM needs to be fit!!! #TOFIX!!!
-model <- glm_to_compint(glm)
+glm <- ### some GLM needs to be fit!!! #TOFIX!!!
+  model <- glm_to_compint(glm)
 draws <- draws_from_paramdist(model, ndraws = 1000, seed = 123)
 }
 
-#TOFIX: is importFrom needed here? I mean it depends on the pseudo_posterior fun
+# TOFIX: is importFrom needed here? I mean it depends on the pseudo_posterior fun
 
 }

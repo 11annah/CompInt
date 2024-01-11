@@ -28,10 +28,9 @@ A character string representing the linear predictor.
 \examples{
 \dontrun{
 # Example usage
-#TOFIXglm <- ###some GLM needs to be fit!!! #TOFIX!!!
-#TOFIXmodel <- glm_to_compint(glm)
-#TOFIXlinear_pred <- produce_model_definition(model, reg_of_interest = "TOFIX", separate_interactions = TRUE)
+# TOFIXglm <- ###some GLM needs to be fit!!! #TOFIX!!!
+# TOFIXmodel <- glm_to_compint(glm)
+# TOFIXlinear_pred <- produce_model_definition(model, reg_of_interest = "TOFIX", separate_interactions = TRUE)
 }
-
 
 }
