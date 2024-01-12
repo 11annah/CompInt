@@ -29,8 +29,13 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
   domains=list(ints.values())
   
   def function(x):
-    x_values = [x[:, i].repeat(len(list(data.values())[0]), 1) for i in range(x.size(1))]
+    if grad_variable is None:
+      x_values = [x[:, i].repeat(len(list(data.values())[0]), 1) for i in range(x.size(1))]
+    else:
+      x_values = [torch.tensor(x[:, i].repeat(len(list(data.values())[0]), 1), dtype=torch.float64, requires_grad=True) for i in range(x.size(1))]
+    
     x_dict = dict(zip(ints.keys(), x_values))
+    print("x_dict:",x_dict)
     globals().update(x_dict) 
     
     #So far only Unif #TOFIX
@@ -41,7 +46,17 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
     else:
         LinPred_val = norm * eval(LinPred)
         
-    return(LinPred_val.mean(dim=0))
+    print("LinPred_val:",LinPred_val)
+    if grad_variable is None:
+      result = LinPred_val.mean(dim=0)
+    else:
+      #LinPred_val.backward(torch.ones_like(LinPred_val), retain_graph=True)
+      #Issue: needs to be VECTORIZED!!!!
+      #LinPred_val[:,0] ....
+      gradient = eval(f'{grad_variable}.grad')
+      result = torch.mean(gradient).item()
+        
+    return(result)
     
   final_result = mc.integrate(
                               function,

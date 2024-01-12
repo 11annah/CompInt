@@ -60,6 +60,8 @@ get_IE <- function(model_fit, assumption = NULL, reg_of_interest = NULL, seed = 
 
       return(result)
     }
-    ### ADD non empirical integration 'TOFIX !!!
+    if (integration == "defined_measures") { #### MAYBE DIFFERENT NAME!
+      #### TOFIX
+    }
   }
 }
