@@ -2,8 +2,6 @@ Package: CompInt
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
@@ -14,6 +12,10 @@ Depends:
 Imports:
   stringr,
   reticulate,
-  MASS,
-  reticulate
+  MASS
 RoxygenNote: 7.2.3
+Authors@R: c(
+    person("Hannah", "Schulz-Kümpel", , "hannah.kuempel@stat.uni-muenchen.de", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3972-8392")),
+    person("Pat", "Callahan", role = "ctb")
+  )
