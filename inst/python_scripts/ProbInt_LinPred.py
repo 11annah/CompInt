@@ -34,13 +34,8 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
     else:
       x_values = [torch.tensor(x[:, i].repeat(len(list(data.values())[0]), 1), dtype=torch.float64, requires_grad=True) for i in range(x.size(1))]
     
-    print("x_values:",x_values)
     x_dict = dict(zip(ints.keys(), x_values))
-    print("x_dict:",x_dict)
     globals().update(x_dict) 
-    
-    print("cyl+hp:",cyl+hp)
-    
     
     #So far only Unif #TOFIX
     norm = reduce(mul, (abs(pair[0] - pair[1]) for pair in domains))
@@ -56,12 +51,14 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
       #LinPred_val.backward(torch.ones_like(LinPred_val), retain_graph=True)
       #Issue: needs to be VECTORIZED!!!!
       #LinPred_val[:,0] ....
-      def get_gradient(LinPredentry,grad_variable):
-        LinPredentry.backward(torch.ones_like(LinPredentry), retain_graph=True)
-        gradient = eval(f'{grad_variable}.grad')
-        return(torch.mean(gradient).item())
       
-      result = torch.stack([get_gradient(LinPred_val[:, i],grad_variable) for i in range(LinPred_val.shape[1])], dim=1)
+      LinPred_val.backward(torch.ones_like(LinPred_val), retain_graph=True)
+      
+      gradient = eval(f'{grad_variable}.grad')
+      print("gradient:",gradient)
+      result = gradient.mean(dim=0)
+      
+      #result = torch.stack([get_gradient(LinPred_val[:, i],grad_variable) for i in range(LinPred_val.shape[1])], dim=1)
       print("result:",result)
         
     return(result)
