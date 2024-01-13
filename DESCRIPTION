@@ -1,10 +1,10 @@
 Package: CompInt
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Compute comparable and interpretable reporting quantities for different model objects
 Version: 0.1.0
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: This package is in the development phase. 
+    Eventually, it will contain implementations of all quantities from the preprint of Kümpel & Hoffmann (2022).
+License: GPL (>= 2) | GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends: 
@@ -12,7 +12,8 @@ Depends:
 Imports:
   stringr,
   reticulate,
-  MASS
+  MASS,
+  progressr
 RoxygenNote: 7.2.3
 Authors@R: c(
     person("Hannah", "Schulz-Kümpel", , "hannah.kuempel@stat.uni-muenchen.de", role = c("aut", "cre"),
