@@ -17,14 +17,17 @@ Inverse.Functions<-data.frame(Link=c("logit",
 
 ChunkList <- list(
   getting_situated = quote({
+    model<-model_transform(model_fit,data=data)#This needs to be extended depending on the model structure functions that are written #TOFIX
+    reg_naming_check(model)
+
+    if(is.null(distribution)){stop("The argument 'distribution' must be specified.")}#TOFIX check that it is from the right set of functions!
+    distribution(model = model)
+
     assumptionstop(assumption)
     ellipsisvars <- names(list(...))
     for (variablename in ellipsisvars) {
       assign(variablename, list(...)[[variablename]], envir = environment())
     }
-    model<-model_transform(model_fit,data=data)#This needs to be extended depending on the model structure functions that are written #TOFIX
-    reg_naming_check(model)
-    newdata <- newdata_subset_merge(newdata,subset,mod=model)
 
     if(separate_interactions & !model[["model_specification"]][["regs"]][["interactions"]][["present"]]){stop("'seperate_interactions' is specified as TRUE, but are no interaction terms present in the model.")}
     }),

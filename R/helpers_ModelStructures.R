@@ -1,3 +1,5 @@
+#For seperate package, the function check_model_class may also be needed.
+
 get_original_formula <- function(model) {
   # extract formula from standard model objects
   formula_standard <- try(model[["formula"]], silent = TRUE)

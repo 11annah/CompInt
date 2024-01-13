@@ -1,5 +1,5 @@
 #' @export
-get_gME <- function(model_fit, assumption = NULL, reg_of_interest = NULL, seed = NULL, ndraws = 1000, integration = "empirical", separate_interactions = FALSE, newdata = NULL, subset = NULL, catRIbin = FALSE, ...) {
+get_gME <- function(model_fit, reg_of_interest = NULL, distribution = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
   eval(ChunkList$getting_situated)
 
   if (is.null(reg_of_interest)) {
@@ -15,8 +15,6 @@ get_gME <- function(model_fit, assumption = NULL, reg_of_interest = NULL, seed =
 
     eval(ChunkList$getting_inverse)
 
-
-    reticulate::source_python("inst/python_scripts/gME_simplegrad.py")
     # reticulate::source_python("inst/python_scripts/gME_calculations.py")
     eval_g_theta_at_point <- eval(parse(text = paste(
       "function(theta,l,", reg_of_interest, "=NULL){",
@@ -25,6 +23,7 @@ get_gME <- function(model_fit, assumption = NULL, reg_of_interest = NULL, seed =
     )))
 
     if (integration == "empirical") {
+      reticulate::source_python("inst/python_scripts/gME_simplegrad.py")
       eval(ChunkList$empirical_Int_catmet_handling)
       eval(ChunkList$data_asmpt__plus__coef_draws)
 

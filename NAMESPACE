@@ -3,6 +3,7 @@
 S3method(coef,CompInt_model)
 S3method(vcov,CompInt_model)
 export(draws_from_paramdist)
+export(empirical)
 export(get_IE)
 export(get_gME)
 export(glm_to_compint)
