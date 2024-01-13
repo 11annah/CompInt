@@ -13,6 +13,7 @@ process_ellipsis_distributions <- function(...) {
 
   if(length(regressor_list)==0){return(NULL)
   }else{
+######CONTINUE HERE!!!!!
 
   # Iterate over the elements of the ellipsis list
   for (name in names(regressor_list)) {
