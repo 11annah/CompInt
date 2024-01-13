@@ -7,8 +7,7 @@ process_single_dist <- function(dist){
   for(arg in names(dist[["args"]])){
     assign_to_parent(arg,dist[["args"]][[arg]])
   }
-  environment(execute) <- parent.frame()
-  execute(model=model)
+  execute(model=model,pos=4)
 }
 
 

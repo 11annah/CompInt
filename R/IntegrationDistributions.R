@@ -35,22 +35,21 @@ assumption3 <- function(dist){
 
 #' @export
 all_empirical <- function(newdata = NULL,subset=NULL){
-  returnfunction <- function(...) {
-    assign_to_parent("distribution","empirical")
+  returnfunction <- function(model,pos,...) {
+    assign_to_parent("distribution","empirical",pos=pos)
     if (!any(is.null(newdata) & is.null(subset))) {
-      if (!("model" %in% names(list(...)))) {
-        stop("If at least one of the arguments newdata and subset are not NULL, 'model' must be specified in the ellipsis of 'empirical's return function.")
-      }else{
            newdat = newdata_subset_merge(newdata,subset,mod=list(...)$model)
-          }
     }else{
            newdat = NULL
     }
-    browser()
-    assign_to_parent("newdata",newdat)
+    assign_to_parent("newdata",newdat,pos=pos)
   }
   return(structure(list(output=returnfunction,args=list(newdata=newdata,subset=subset)),class="all_empirical"))
 }
+
+
+
+
 ################################################################################
 #' @export
 cont <- function(min,max){
@@ -66,13 +65,7 @@ return(list(type="discrete",int=values))
 ################################################################################
 #' @export
 uniform <- function(){
-  returnfunction <- function(...) {
-    assign_to_parent("distribution","defined_measures")
-    if (!("model" %in% names(list(...)))) {
-      stop("'model' needs to be specified.")
-    }
-  }
-  return(returnfunction)
+  #.....
 }
 
 
