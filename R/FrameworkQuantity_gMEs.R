@@ -1,5 +1,5 @@
 #' @export
-get_gME <- function(model_fit, reg_of_interest = NULL, distribution = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
+get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
   eval(ChunkList$getting_situated)
 
   if (is.null(reg_of_interest)) {
@@ -22,7 +22,7 @@ get_gME <- function(model_fit, reg_of_interest = NULL, distribution = NULL, seed
       "}"
     )))
 
-    if (integration == "empirical") {
+    if (distribution == "empirical") {
       reticulate::source_python("inst/python_scripts/gME_simplegrad.py")
       eval(ChunkList$empirical_Int_catmet_handling)
       eval(ChunkList$data_asmpt__plus__coef_draws)

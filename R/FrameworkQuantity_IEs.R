@@ -1,5 +1,5 @@
 #' @export
-get_IE <- function(model_fit, reg_of_interest = NULL, distribution = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
+get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
   eval(ChunkList$getting_situated)
 
   if (!(any(reg_of_interest %in% regs(model)) | is.null(reg_of_interest))) {
@@ -22,7 +22,7 @@ get_IE <- function(model_fit, reg_of_interest = NULL, distribution = NULL, seed 
       "}"
     )))
 
-    if (integration == "empirical") {
+    if (distribution == "empirical") {
       eval(ChunkList$empirical_Int_catmet_handling)
       eval(ChunkList$data_asmpt__plus__coef_draws)
 
@@ -60,7 +60,7 @@ get_IE <- function(model_fit, reg_of_interest = NULL, distribution = NULL, seed 
 
       return(result)
     }
-    if (integration == "defined_measures") { #### MAYBE DIFFERENT NAME!
+    if (distribution == "defined_measures") { #### MAYBE DIFFERENT NAME!
       #### TOFIX
     }
   }
