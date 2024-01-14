@@ -13,19 +13,20 @@ with open('inst/python_scripts/InverseFunctions.py', 'r') as f:
 exec(script_code)
 
 
-def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
+def integrate_LPmods(ints,LinPred,thetas,data=None,fun=None,grad_variable=None):
   if fun is not None:
     inv_link_fun = make_inv_link_function(fun)
   else:
     inv_link_fun = None
-    
-  tensor_dict = {key: torch.tensor(value, dtype=torch.float64).view(-1, 1) for key, value in data.items()}
-  globals().update(tensor_dict)    
+  
+  if data is not None:
+    tensor_dict = {key: torch.tensor(value, dtype=torch.float64).view(-1, 1) for key, value in data.items()}
+    globals().update(tensor_dict) 
     
   global theta
   global domains
     
-  theta = torch.tensor([0]+thetas, dtype=torch.double)
+  theta = torch.tensor(thetas, dtype=torch.double)
   domains=list(ints.values())
   
   def function(x):
@@ -41,7 +42,7 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
     norm = reduce(mul, (abs(pair[0] - pair[1]) for pair in domains))
     
     if inv_link_fun is not None:
-        LinPred_val = norm * eval(f'inv_link_fun({LinPred})')
+        LinPred_val = (norm ** (-1)) *  eval(f'inv_link_fun({LinPred})')
     else:
         LinPred_val = norm * eval(LinPred)
 
@@ -55,12 +56,8 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
       LinPred_val.backward(torch.ones_like(LinPred_val), retain_graph=True)
       
       gradient = eval(f'{grad_variable}.grad')
-      print("gradient:",gradient)
       result = gradient.mean(dim=0)
       
-      #result = torch.stack([get_gradient(LinPred_val[:, i],grad_variable) for i in range(LinPred_val.shape[1])], dim=1)
-      print("result:",result)
-        
     return(result)
     
   final_result = mc.integrate(
@@ -70,5 +67,5 @@ def integrate_LPmods(ints,data,LinPred,thetas,fun=None,grad_variable=None):
                               integration_domain=domains,
                               backend="torch",
                               )
-  return(final_result)
+  return(final_result.item())
   

@@ -10,6 +10,8 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
   }
 
   if (model[["type"]] %in% c("GLM", "GLMM")) {
+    coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
+
     linear_predictor <- make_linear_predictor(mod = model, reg_of_interest = reg_of_interest, separate_interactions = separate_interactions)
 
     eval(ChunkList$getting_inverse)
@@ -24,7 +26,7 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
 
     if (distribution == "empirical") {
       eval(ChunkList$empirical_Int_catmet_handling)
-      eval(ChunkList$data_asmpt__plus__coef_draws)
+      eval(ChunkList$data_asmpt)
 
       if (continue_metric) {
         result <- simple_emp_int(data = EmpDat, coef_draws = coef_draws, f = eval_g_theta_at_point)
@@ -60,8 +62,19 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
 
       return(result)
     }
-    if (distribution == "defined_measures") { #### MAYBE DIFFERENT NAME!
-      #### TOFIX
+    if (distribution == "other_standard_opts") {
+      reticulate::source_python("inst/python_scripts/ProbInt_LinPred.py")
+
+      run_in_parent(int_for_RIunif_empirical)
+
+      progressr::with_progress({
+        p <- progressr::progressor(along = lapply(seq_len(nrow(coef_draws)), function(x) coef_draws[x,]))
+        result <- apply(coef_draws, 1, function(x) {
+          p(sprintf("x=%g", x))
+          integrate_LPmods(ints=ints, LinPred = gsub_complex("[l]", linear_predictor$non_vectorized), thetas = c(0, x),data = data, fun = inverse_link)
+        })
+      })
+      return(result)
     }
   }
 }

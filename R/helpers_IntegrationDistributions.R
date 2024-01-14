@@ -2,7 +2,7 @@ assign_to_parent <- function(name,value,pos=2){
   assign(name,value,envir = parent.frame(pos))
 }
 
-process_single_dist <- function(dist){
+process_predefined_measures <- function(dist,...){
   execute <- dist[["output"]]
   for(arg in names(dist[["args"]])){
     assign_to_parent(arg,dist[["args"]][[arg]])
