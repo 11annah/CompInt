@@ -18,6 +18,7 @@ glm_to_compint <- function(model) {
     list(
       model = model,
       data = model$data,
+      catreg_list = NULL,
       formula = original_formula,
       type = "GLM",
       model_specification = list(

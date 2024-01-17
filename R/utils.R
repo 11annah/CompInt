@@ -38,7 +38,11 @@ attach_silent_wrapper <- function(data, code) {
 
 data_prep <- function(mod, data = NULL, separate_interactions = FALSE) {
   if (is.null(data)) {
+    if(!is.null(mod[["data"]])){
     data <- mod[["data"]]
+    }else{
+      data <- expand.grid(mod[["catreg_list"]])
+    }
   }
   dat <- data[, regs(mod), drop = FALSE]
   dat <- dat[complete.cases(dat), , drop = FALSE]
