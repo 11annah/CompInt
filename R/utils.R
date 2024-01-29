@@ -10,10 +10,7 @@ check_model_class <- function(model, inputname) {
     stop(message)
   }
 }
-regs <- function(object) {
-  check_model_class(object, "object")
-  return(unlist(object[["model_specification"]][["regs"]][c("metric", "categorical")]))
-}
+
 
 reg_naming_check <- function(mod) {
   regs <- regs(mod)
@@ -231,12 +228,6 @@ listels_by_name <- function(list, name) {
   lapply(list, `[[`, name)
 }
 
-
-###
-list_contains <- function(list1, list2) {
-  all(sapply(list1, function(x) any(sapply(list2, function(y) all(x %in% y)))))
-}
-
 remove_contained_lists <- function(list_of_lists) {
   result <- list_of_lists
   ind <- numeric()
@@ -370,39 +361,3 @@ replace_values <- function(char_list, row_values) {
   return(return_list)
 }
 
-
-listify_mat <- function(M, dim, inner_list = FALSE) {
-  if (!inner_list) {
-    if (dim == 1) {
-      return(lapply(seq_len(nrow(M)), function(i) M[i, ]))
-    }
-    if (dim == 2) {
-      return(lapply(seq_len(ncol(M)), function(i) M[, i]))
-    }
-  } else {
-    if (dim == 1) {
-      return(lapply(seq_len(nrow(M)), function(i) as.list(M[i, ])))
-    }
-    if (dim == 2) {
-      return(lapply(seq_len(ncol(M)), function(i) as.list(M[, i])))
-    }
-  }
-}
-
-
-val_lists_for_cat_empInt <- function(points, assumption, RIvals, RIentry, ref_cat, i) {
-  if (assumption %in% c("A.I", "A.II'")) {
-    points1 <- lapply(points, function(x) x[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[RIentry[i]]])))
-    points2 <- lapply(points, function(x) x[names(RIvals[[RIentry[i]]])] <- as.data.frame(t(RIvals[[ref_cat]])))
-
-    val_lists <- lapply(points1, function(x) replace_values(vec_list, x))
-    val_lists2 <- lapply(points2, function(x) replace_values(vec_list, x))
-  } else { # now for assumption "A.II''"
-    points1 <- points[which(lapply(points, function(x) x[names(RIvals[[RIentry[i]]])] == as.data.frame(t(RIvals[[RIentry[i]]]))))]
-    points2 <- points[which(lapply(points, function(x) x[names(RIvals[[RIentry[i]]])] == as.data.frame(t(RIvals[[ref_cat]]))))]
-
-    val_lists <- lapply(points1, function(x) replace_values(vec_list, x))
-    val_lists2 <- lapply(points2, function(x) replace_values(vec_list, x))
-  }
-  return(list(val_lists, val_lists2))
-}

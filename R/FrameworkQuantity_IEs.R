@@ -1,6 +1,8 @@
 #' @export
 get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
-  eval(ChunkList$getting_situated)
+  run_in_parent(getting_situated1)
+  integration(model = model)
+  run_in_parent(getting_situated2)
 
   if (!(any(reg_of_interest %in% regs(model)) | is.null(reg_of_interest))) {
     stop("'reg_of_interest' must either be a variable used for the model specification or set to NULL.")
@@ -14,7 +16,7 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
 
     linear_predictor <- make_linear_predictor(mod = model, reg_of_interest = reg_of_interest, separate_interactions = separate_interactions)
 
-    eval(ChunkList$getting_inverse)
+    run_in_parent(getting_inverse)
 
 
     # reticulate::source_python("inst/python_scripts/gME_calculations.py")
@@ -36,7 +38,7 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
         if ("refcat" %in% ellipsisvars) {
           # TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
-        eval(ChunkList$ prepping_for_catRI)
+        run_in_parent(prepping_for_catRI)
 
         result <- matrix(nrow = length(nonref_cats) + 1, ncol = ndraws)
         rownames(result) <- c(ref_cat, nonref_cats)
