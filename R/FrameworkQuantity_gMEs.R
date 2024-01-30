@@ -28,8 +28,8 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
 
     if (distribution == "empirical") {
       reticulate::source_python("inst/python_scripts/gME_simplegrad.py")
-      eval(ChunkList$empirical_Int_catmet_handling)
-      eval(ChunkList$data_asmpt)
+      run_in_parent(empirical_Int_catmet_handling)
+      run_in_parent(data_asmpt)
 
       if (continue_metric) {
         progressr::with_progress({

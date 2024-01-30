@@ -92,5 +92,8 @@ int_for_RIunif_empirical <- function(envir){
   assign("ints",ints,envir=envir)
   }}
 
-
-
+catch_python_warnings <-  function(){
+  if (reticulate::py_run_string("len(warnings._warnings)") > 0) {
+    cat("There were Python warnings. Call CompInt_warnings() to view them.\n")
+  }
+}

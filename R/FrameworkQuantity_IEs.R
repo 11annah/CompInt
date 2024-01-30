@@ -27,8 +27,8 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
     )))
 
     if (distribution == "empirical") {
-      eval(ChunkList$empirical_Int_catmet_handling)
-      eval(ChunkList$data_asmpt)
+      run_in_parent(empirical_Int_catmet_handling)
+      run_in_parent(data_asmpt)
 
       if (continue_metric) {
         result <- simple_emp_int(data = EmpDat, coef_draws = coef_draws, f = eval_g_theta_at_point)
