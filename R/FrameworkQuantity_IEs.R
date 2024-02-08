@@ -19,7 +19,6 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
     run_in_parent(getting_inverse)
 
 
-    # reticulate::source_python("inst/python_scripts/gME_calculations.py")
     eval_g_theta_at_point <- eval(parse(text = paste(
       "function(theta,l){",
       make_g_theta(model_type = model[["type"]], linear_predictor = linear_predictor, inverse_link = inverse_link, vectorized = FALSE, ...),
@@ -65,7 +64,7 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
       return(result)
     }
     if (distribution == "other_standard_opts") {
-      reticulate::source_python("inst/python_scripts/ProbInt_LinPred.py")
+      reticulate::source_python(system.file("python_scripts","ProbInt_LinPred.py",package = "CompInt"))
 
       run_in_parent(int_for_RIunif_empirical)
 

@@ -19,7 +19,6 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
 
     run_in_parent(getting_inverse)
 
-    # reticulate::source_python("inst/python_scripts/gME_calculations.py")
     eval_g_theta_at_point <- eval(parse(text = paste(
       "function(theta,l,", reg_of_interest, "=NULL){",
       make_g_theta(model_type = model[["type"]], linear_predictor = linear_predictor, inverse_link = inverse_link, vectorized = FALSE, ...),
@@ -27,7 +26,7 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
     )))
 
     if (distribution == "empirical") {
-      reticulate::source_python("inst/python_scripts/gME_simplegrad.py")
+      reticulate::source_python(system.file("python_scripts","gME_simplegrad.py",package = "CompInt"))
       run_in_parent(empirical_Int_catmet_handling)
       run_in_parent(data_asmpt)
 
@@ -86,7 +85,7 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
       return(result)
     }
     if (distribution == "other_standard_opts") {
-      reticulate::source_python("inst/python_scripts/ProbInt_LinPred.py")
+      reticulate::source_python(system.file("python_scripts","ProbInt_LinPred.py",package = "CompInt"))
 
       run_in_parent(int_for_RIunif_empirical)
 

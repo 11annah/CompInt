@@ -1,3 +1,5 @@
+import os
+import sys
 from functools import reduce
 import operator
 from operator import mul
@@ -7,7 +9,7 @@ from torchquad import MonteCarlo, set_up_backend
 set_up_backend("torch", data_type="float32")
 mc = MonteCarlo()
 
-with open('inst/python_scripts/InverseFunctions.py', 'r') as f:
+with open(os.path.join(os.path.dirname(__file__), 'InverseFunctions.py'), 'r') as f:
     script_code = f.read()
 
 exec(script_code)
