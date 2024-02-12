@@ -14,6 +14,17 @@ Imports:
   reticulate,
   MASS,
   progressr
+Config/reticulate/autoconfigure:
+  list(
+    packages = list(
+      list(package = "os"),
+      list(package = "sys"),
+      list(package = "functools"),
+      list(package = "operator"),
+      list(package = "torch"),
+      list(package = "torchquad")
+    )
+  )
 RoxygenNote: 7.2.3
 Authors@R: c(
     person("Hannah", "Schulz-Kümpel", , "hannah.kuempel@stat.uni-muenchen.de", role = c("aut", "cre"),
