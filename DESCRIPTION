@@ -17,12 +17,12 @@ Imports:
 Config/reticulate/autoconfigure:
   list(
     packages = list(
-      list(package = "os"),
-      list(package = "sys"),
-      list(package = "functools"),
-      list(package = "operator"),
-      list(package = "torch"),
-      list(package = "torchquad")
+      list(package = "os", pip = TRUE),
+      list(package = "sys", pip = TRUE),
+      list(package = "functools", pip = TRUE),
+      list(package = "operator", pip = TRUE),
+      list(package = "torch", pip = TRUE),
+      list(package = "torchquad", pip = TRUE)
     )
   )
 RoxygenNote: 7.2.3
