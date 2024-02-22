@@ -164,10 +164,10 @@ binary_regs <- function(data, col, catRIbin) {
             "The regressor '", col, "' is stored as a numeric dichotomous variable.\nAs such, it could be treated as either a categorical or metric regressor.\nIf '", col, "' cannot take values than '0', '1', or 'NA', it is advisable to convert it to a categorical variable.\nOtherwise, it makes sense to keep it as numeric.\n
 Enter C for converting to categorical and N for keeping the variable numeric: "
           )
-          user_input <- readline(prompt = cat(prompt))
+          user_input <- readline(prompt = cat(prompt,fill=TRUE))
           if (!as.character(user_input) %in% c("C", "N")) {
             message("Sorry, but you have to decide between C and N.")
-            user_input <- readline(prompt = cat(prompt))
+            user_input <- readline(prompt = cat(prompt,fill=TRUE))
           }
           if (!as.character(user_input) %in% c("C", "N")) {
             stop("Sorry, but you really have to decide between C and N.")
