@@ -16,6 +16,7 @@ You can install the development version of CompInt from [GitHub](https://github.
 # install.packages("devtools")
 devtools::install_github("11annah/CompInt")
 ```
+If the required python modules are not present, call `py_install_CompInt()` to access the entire functionality of the CompInt package.
 
 ## Example
 
