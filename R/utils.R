@@ -96,9 +96,9 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
     assign("RIcat_raw", prep_for_asmpt[[reg_of_interest]], envir = parent.frame())
     if (ncol(prep_for_asmpt) == 1 & assumption %in% c("A.I", "A.II'")) {
       return(NULL)
-    } else {
-      prep_for_asmpt[[reg_of_interest]] <- NULL
-    }
+    } #else {
+      #prep_for_asmpt[[reg_of_interest]] <- NULL
+    #}
   } else {
     assign("RIcat_raw", NULL, envir = parent.frame())
   }
