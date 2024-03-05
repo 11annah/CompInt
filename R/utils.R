@@ -97,7 +97,6 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
     if (ncol(prep_for_asmpt) == 1 & assumption %in% c("A.I", "A.II'")) {
       return(NULL)
     } #else {
-      #prep_for_asmpt[[reg_of_interest]] <- NULL
     #}
   } else {
     assign("RIcat_raw", NULL, envir = parent.frame())
@@ -107,7 +106,12 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
     if (ncol(prep_for_asmpt) == 1) {
       data_asmpt <- prep_for_asmpt
     } else {
+      if(RItype == "categorical"){categories <- levels(as.factor(prep_for_asmpt[[reg_of_interest]]))
+        prep_for_asmpt[[reg_of_interest]] <- NULL}
       data_asmpt <- as.data.frame(do.call(expand.grid, prep_for_asmpt))
+      if(RItype == "categorical"){data_asmpt <-cbind(rep(categories,each=ceiling(nrow(df) / length(vec)))[1:nrow(data_asmpt)],data_asmpt)
+      names(data_asmpt)[1] <- reg_of_interest
+      }
     }
     names(data_asmpt) <- names(prep_for_asmpt)
   }
