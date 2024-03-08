@@ -3,3 +3,6 @@
 ^data-raw$
 ^COPYING$
 ^COPYING3$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
