@@ -60,10 +60,11 @@ data_asmpt <- function(envir){
   if(length(regsC)==0 | is.null(data_asmpt)){
     assign("EmpDat",data_asmpt,envir=envir)
   }else{
-    if(all(regsC==reg_of_interest) & any(assumption %in% c("A.I","A.II'"))){assign("EmpDat",data_asmpt,envir=envir)
-     }else{
+    #if(all(regsC==reg_of_interest) & any(assumption %in% c("A.I","A.II'"))){assign("EmpDat",data_asmpt,envir=envir)
+    # }else{
       assign("EmpDat",make_dummy_coded_data(mod=model,dat=data_asmpt,reg_of_interest=reg_of_interest,separate_interactions=separate_interactions),envir=envir)
-       }}
+     #}
+    }
 }
 
 
