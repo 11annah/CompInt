@@ -6,5 +6,5 @@ s<-sticker(imgurl, package="CompInt",
            h_fill="#EFFEFF",h_color = "#1C75BC",
            s_width=.6,
            dpi=1000,
-           filename = "CompInt/man/figures/logo.png")
+           filename = "man/figures/logo.png")
 plot(s)
