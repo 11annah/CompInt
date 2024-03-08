@@ -4,3 +4,4 @@
 .Ruserdata
 __pycache__/
 docs
+inst/doc
