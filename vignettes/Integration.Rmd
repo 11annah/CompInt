@@ -2,7 +2,7 @@
 title: "Integration"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{integration}
+  %\VignetteIndexEntry{Integration}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,6 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(CompInt)
-```
+
+![Caption for the Graphic](assumptions.png)
+
