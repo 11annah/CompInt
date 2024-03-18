@@ -1,4 +1,4 @@
-make_interaction_data(data, separate_interactions){
+make_interaction_data <- function(data, separate_interactions){
   if(!separate_interactions){
     return(data)
   }else{
