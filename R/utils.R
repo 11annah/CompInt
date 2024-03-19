@@ -169,7 +169,7 @@ Enter C for converting to categorical and N for keeping the variable numeric: "
   }
 }
 
-dealing_with_catRI <- function(dat, RIcat_raw, g_theta, RIname = "RI") {
+dealing_with_catRI <- function(dat,RIcat_raw, g_theta, RIname = "RI", separate_interactions=FALSE) {
   all_cats <- names(dat)[grepl(RIname, names(dat))]
   if (length(all_cats) == 0) {
     all_cats <- names(as.data.frame(model.matrix(~ 0 + as.factor(RIcat_raw))))
@@ -345,4 +345,14 @@ replace_values <- function(char_list, row_values) {
                         }}")
   return(return_list)
 }
+
+
+prepare_return <- function(matrix,rownames){
+  rownames(matrix) <- rownames
+  return(matrix)
+}
+
+
+
+
 

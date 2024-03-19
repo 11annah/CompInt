@@ -30,14 +30,28 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
       run_in_parent(empirical_Int_catmet_handling)
       run_in_parent(data_asmpt)
 
+      interaction_data <- make_interaction_data(mod = model, data = EmpDat, reg_of_interest = reg_of_interest, separate_interactions= separate_interactions)
+      EmpDat <- interaction_data$data
+
+      if(all(c(any(interaction_data$involved%in%model[["model_specification"]][["regs"]][["metric"]]),any(interaction_data$involved%in%model[["model_specification"]][["regs"]][["categorical"]])))){
+        continue_metric <- FALSE
+        continue_categorical <- FALSE
+        continue_mixed <- TRUE
+      }else{continue_mixed <- FALSE}
+
+
       if (continue_metric) {
-        progressr::with_progress({
-          p <- progressr::progressor(along = lapply(seq_len(nrow(coef_draws)), function(x) coef_draws[x,]))
-          result <- apply(coef_draws, 1, function(x) {
-            p(sprintf("x=%g", x))
-            simplegrad(data = EmpDat, LinPred = gsub_complex("[l]", linear_predictor$non_vectorized), thetas = c(0, x), grad_variable = reg_of_interest, fun = inverse_link)
-          })
-        })
+        result <- prepare_return(matrix(nrow = length(interaction_data$involved), ncol = ndraws),interaction_data$involved)
+          for(reg in interaction_data$involved){
+            #progressr::with_progress({
+             # p <- progressr::progressor(along = lapply(nrow(coef_draws), function(x) coef_draws[x,]))
+            result[reg, ] <- apply(coef_draws, 1, function(x) {
+            #p(sprintf("x=%g", x))
+            simplegrad(data = EmpDat, LinPred = gsub_complex("[l]", linear_predictor$non_vectorized), thetas = c(0, x), grad_variable = reg, fun = inverse_link)
+            })
+            #})
+          }
+
         # simplegrad(data=EmpDat,LinPred=gsub_complex("[l]",linear_predictor$non_vectorized),thetas=unname(cbind(0,coef_draws)),grad_variable=reg_of_interest,fun=inverse_link)
 
 
@@ -60,9 +74,12 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
           # TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
         run_in_parent(prepping_for_catRI)
-
-        result <- matrix(nrow = length(nonref_cats), ncol = ndraws)
-        rownames(result) <- nonref_cats
+        print(RIvals)
+        if(!separate_interactions){
+        result <- prepare_return(matrix(nrow = length(nonref_cats), ncol = ndraws),nonref_cats)
+        }else{
+          #TOFIX
+        }
 
         torem <- setdiff(names(EmpDat), nonref_cats)
 
@@ -81,6 +98,9 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
             result[cat, ] <- simple_emp_int(data = cbind(RIvals[[cat]], EmpDat[which(rowSums(EmpDat[other_cats]) == 0), torem, drop = FALSE]), coef_draws = coef_draws, f = eval_g_theta_at_point) - IE_refcat
           }
         }
+      }
+      if(continue_mixed){
+        result <- NULL #TOFIX
       }
       return(result)
     }

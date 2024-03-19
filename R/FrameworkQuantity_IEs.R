@@ -1,5 +1,6 @@
 #' @export
-get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
+get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, catRIbin = FALSE, ...) {
+  separate_interactions <- FALSE
   run_in_parent(getting_situated1)
   integration(model = model)
   run_in_parent(getting_situated2)
@@ -14,7 +15,7 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
   if (model[["type"]] %in% c("GLM", "GLMM")) {
     coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
 
-    linear_predictor <- make_linear_predictor(mod = model, reg_of_interest = reg_of_interest, separate_interactions = separate_interactions)
+    linear_predictor <- make_linear_predictor(mod = model, reg_of_interest = reg_of_interest, separate_interactions = FALSE)
 
     run_in_parent(getting_inverse)
 

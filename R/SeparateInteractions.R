@@ -1,12 +1,13 @@
-make_interaction_data <- function(data, separate_interactions){
+make_interaction_data <- function(mod, data, reg_of_interest, separate_interactions){
   if(!separate_interactions){
-    return(data)
+    return(list(data=data, involved=reg_of_interest))
   }else{
     if (!mod[["model_specification"]][["regs"]][["interactions"]][["present"]]) {
       stop("'seperate_interactions' is specified as TRUE, but are no interaction terms present in the model.")
     }
 
-    terms <- mod[["model_specification"]][["regs"]][["interactions"]][["terms"]]
+    all_int_terms <- mod[["model_specification"]][["regs"]][["interactions"]][["terms"]]
+    terms <- all_int_terms[grep(reg_of_interest,all_int_terms)]
     notation <- mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]
 
     INTs <- data.frame(
@@ -19,7 +20,9 @@ make_interaction_data <- function(data, separate_interactions){
         eval(parse(text = INTs$expr[i]))
       })
     }
-    return(data)
+
+    involved_regs <- c(INTs$terms,unique(strsplit(terms,paste0("\\", notation))))
+    return(list(data=data, involved=unlist(involved_regs)))
   }
 }
 
