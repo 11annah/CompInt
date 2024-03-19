@@ -73,9 +73,11 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
         if ("refcat" %in% ellipsisvars) {
           # TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
-        run_in_parent(prepping_for_catRI)
+        RIvals_prep <- dealing_with_catRI(dat=EmpDat,g_theta=eval_g_theta_at_point,RIname=reg_of_interest)
+        print(RIvals_prep[[1]][["vals"]])
 
         if(!separate_interactions){
+        run_in_parent(prepping_for_catRI,i=1)
         result <- prepare_return(matrix(nrow = length(nonref_cats), ncol = ndraws),nonref_cats)
         }else{
           #TOFIX
@@ -84,19 +86,23 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
         torem <- setdiff(names(EmpDat), nonref_cats)
 
         if (assumption %in% c("A.I", "A.II'")) {
+          for(i in seq_along(length(RIvals_prep))){
+          run_in_parent(prepping_for_catRI,i=i)
           IE_refcat <- simple_emp_int(data = cbind(RIvals[[ref_cat]], EmpDat[, torem, drop = FALSE]), coef_draws = coef_draws, f = eval_g_theta_at_point)
 
           for (cat in nonref_cats) {
             result[cat, ] <- simple_emp_int(data = cbind(RIvals[[cat]], EmpDat[, torem, drop = FALSE]), coef_draws = coef_draws, f = eval_g_theta_at_point) - IE_refcat
           }
-        } else { # now for assumption "A.II''"
+        }} else { # now for assumption "A.II''"
+          for(i in seq_along(length(RIvals_prep))){
+          run_in_parent(prepping_for_catRI,i=i)
           all_cats <- c(ref_cat, nonref_cats)
           IE_refcat <- simple_emp_int(data = cbind(RIvals[[ref_cat]], EmpDat[which(rowSums(EmpDat[nonref_cats]) == 0), torem, drop = FALSE]), coef_draws = coef_draws, f = eval_g_theta_at_point)
 
           for (cat in nonref_cats) {
             other_cats <- all_cats[all_cats != cat]
             result[cat, ] <- simple_emp_int(data = cbind(RIvals[[cat]], EmpDat[which(rowSums(EmpDat[other_cats]) == 0), torem, drop = FALSE]), coef_draws = coef_draws, f = eval_g_theta_at_point) - IE_refcat
-          }
+          }}
         }
       }
       if(continue_mixed){

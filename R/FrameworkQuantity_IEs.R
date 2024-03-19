@@ -38,7 +38,8 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
         if ("refcat" %in% ellipsisvars) {
           # TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
-        run_in_parent(prepping_for_catRI)
+        RIvals_prep <- dealing_with_catRI(dat=EmpDat,g_theta=eval_g_theta_at_point,RIname=reg_of_interest)
+        run_in_parent(prepping_for_catRI,i=1)
 
         result <- matrix(nrow = length(nonref_cats) + 1, ncol = ndraws)
         rownames(result) <- c(ref_cat, nonref_cats)

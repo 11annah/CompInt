@@ -1,6 +1,6 @@
-run_in_parent <- function(func,pos=1){
+run_in_parent <- function(func,pos=1,...){
   environment(func) <- parent.frame(pos)
-  func(envir=environment(func))
+  func(envir=environment(func),...)
 }
 
 ################################################################################
@@ -68,11 +68,10 @@ data_asmpt <- function(envir){
 }
 
 
-prepping_for_catRI <- function(envir){
-  assign("RIvals_prep",dealing_with_catRI(dat=EmpDat,g_theta=eval_g_theta_at_point,RIname=reg_of_interest),envir=envir)
-  assign("RIvals",RIvals_prep[["vals"]],envir=envir)
-  assign("ref_cat",RIvals_prep[["ref_cat"]],envir=envir)
-  assign("nonref_cats",RIvals_prep[["nonref_cats"]],envir=envir)
+prepping_for_catRI <- function(envir,i){
+  assign("RIvals",RIvals_prep[[i]][["vals"]],envir=envir)
+  assign("ref_cat",RIvals_prep[[i]][["ref_cat"]],envir=envir)
+  assign("nonref_cats",RIvals_prep[[i]][["nonref_cats"]],envir=envir)
 }
 
 

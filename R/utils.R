@@ -195,12 +195,12 @@ dealing_with_catRI <- function(dat, g_theta, RIname = "RI", separate_interaction
 
   for (cat in names(vals)) {
     vals[[cat]][1, rep1[[cat]]] <- 1
-  }}
-  if(separate_interactions){
   }
+  return(list(list(vals = vals, ref_cat = all_cats[!(all_cats %in% nonref_cats)], nonref_cats = nonref_cats)))
+  }
+  if(separate_interactions){
 
-
-  return(list(vals = vals, ref_cat = all_cats[!(all_cats %in% nonref_cats)], nonref_cats = nonref_cats))
+  }
 
 }
 
