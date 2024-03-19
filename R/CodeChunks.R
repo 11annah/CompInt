@@ -69,7 +69,7 @@ data_asmpt <- function(envir){
 
 
 prepping_for_catRI <- function(envir){
-  assign("RIvals_prep",dealing_with_catRI(dat=EmpDat,RIcat_raw=RIcat_raw,g_theta=eval_g_theta_at_point,RIname=reg_of_interest),envir=envir)
+  assign("RIvals_prep",dealing_with_catRI(dat=EmpDat,g_theta=eval_g_theta_at_point,RIname=reg_of_interest),envir=envir)
   assign("RIvals",RIvals_prep[["vals"]],envir=envir)
   assign("ref_cat",RIvals_prep[["ref_cat"]],envir=envir)
   assign("nonref_cats",RIvals_prep[["nonref_cats"]],envir=envir)

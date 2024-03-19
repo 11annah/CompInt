@@ -74,14 +74,14 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
   }
 
   if (RItype == "categorical") {
-    assign("RIcat_raw", prep_for_asmpt[[reg_of_interest]], envir = parent.frame())
-    if (ncol(prep_for_asmpt) == 1 & assumption %in% c("A.I", "A.II'")) {
-      return(NULL)
+    #assign("RIcat_raw", prep_for_asmpt[[reg_of_interest]], envir = parent.frame())
+    #if (ncol(prep_for_asmpt) == 1 & assumption %in% c("A.I", "A.II'")) {
+    #  return(NULL)
     } #else {
     #}
-  } else {
-    assign("RIcat_raw", NULL, envir = parent.frame())
-  }
+  #} else {
+    #assign("RIcat_raw", NULL, envir = parent.frame())
+  #}
 
   if (assumption == "A.I") {
     if (ncol(prep_for_asmpt) == 1) {
@@ -169,26 +169,39 @@ Enter C for converting to categorical and N for keeping the variable numeric: "
   }
 }
 
-dealing_with_catRI <- function(dat,RIcat_raw, g_theta, RIname = "RI", separate_interactions=FALSE) {
-  all_cats <- names(dat)[grepl(RIname, names(dat))]
-  if (length(all_cats) == 0) {
-    all_cats <- names(as.data.frame(model.matrix(~ 0 + as.factor(RIcat_raw))))
-    all_cats <- sub("as.factor\\(RIcat_raw\\)", RIname, all_cats)
+dealing_with_catRI <- function(dat, g_theta, RIname = "RI", separate_interactions=FALSE) {
+  if(separate_interactions & length(RIname)==1){
+    stop("If separate interactions are to be calculated, the length of the 'RIname' argument must be greater than zero.")
   }
+  if(!separate_interactions){
+  all_cats <- names(dat)[grepl(RIname, names(dat))]
   nonref_cats <- names(which(sapply(all_cats, function(x) grepl(x, paste(deparse(g_theta), collapse = "")))))
+  }
+  if(separate_interactions){
+    all_catregs <- mod[["model_specification"]][["regs"]][["categorical"]]
+    catregs <- all_catregs[which(unlist(sapply(all_catregs,function(x)any(grepl(x,RIname)))))]
+    all_cats <- names(dat)[which(unlist(sapply(names(dat),function(x)grepl(paste(catregs, collapse = "|"),x))))]
+    nonref_cats <- names(which(sapply(all_cats, function(x) grepl(x, paste(deparse(g_theta), collapse = "")))))
+    }
+
 
   init <- data.frame(matrix(0, nrow = 1, ncol = length(nonref_cats)))
   names(init) <- nonref_cats
+
+  if(!separate_interactions){
   vals <- replicate(n = length(all_cats), init, simplify = FALSE)
   names(vals) <- all_cats
-
   rep1 <- mapply(function(x, y) which(names(x) %in% y), vals, names(vals))
 
   for (cat in names(vals)) {
     vals[[cat]][1, rep1[[cat]]] <- 1
+  }}
+  if(separate_interactions){
   }
 
+
   return(list(vals = vals, ref_cat = all_cats[!(all_cats %in% nonref_cats)], nonref_cats = nonref_cats))
+
 }
 
 simple_emp_int <- function(data, coef_draws, f) {

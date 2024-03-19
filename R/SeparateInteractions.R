@@ -6,7 +6,12 @@ make_interaction_data <- function(mod, data, reg_of_interest, separate_interacti
       stop("'seperate_interactions' is specified as TRUE, but are no interaction terms present in the model.")
     }
 
+    if(reg_of_interest %in% mod[["model_specification"]][["regs"]][["metric"]]){
     all_int_terms <- mod[["model_specification"]][["regs"]][["interactions"]][["terms"]]
+    }else{
+    all_int_terms <- grep( paste0("\\", notation),names(coef(mod)))
+    }
+
     terms <- all_int_terms[grep(reg_of_interest,all_int_terms)]
     notation <- mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]
 

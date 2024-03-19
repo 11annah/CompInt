@@ -74,7 +74,7 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
           # TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
         run_in_parent(prepping_for_catRI)
-        print(RIvals)
+
         if(!separate_interactions){
         result <- prepare_return(matrix(nrow = length(nonref_cats), ncol = ndraws),nonref_cats)
         }else{
