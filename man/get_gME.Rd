@@ -20,7 +20,7 @@ get_gME(
 
 \item{reg_of_interest}{The regressor of interest for which gME values are calculated.}
 
-\item{integration}{An integration function. Default is NULL.}
+\item{integration}{An integration function. Default is NULL. #TOFIX ... \code{\link{assumption1}} \code{\link{assumption2}} \code{\link{assumption3}}}
 
 \item{seed}{Seed for random number generation. Default is NULL.}
 
@@ -50,4 +50,7 @@ model <- lm(mpg ~ cyl + disp + hp + drat, data = mtcars)
 get_gME(model_fit = model, reg_of_interest = "cyl")
 }
 
+}
+\references{
+Kümpel, H. & Hoffmann, S. A formal framework for generalized reporting methods in parametric settings. ArXiv Prepr. ArXiv221102621 (2022).
 }

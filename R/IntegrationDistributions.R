@@ -1,3 +1,20 @@
+#' Functions for Assumptions
+#'
+#' These functions implement different assumptions for a model.
+#'
+#' @description
+#' The functions assumption1, assumption2, and assumption3 implement different assumptions for a model, namely A.I, A.II', and A.II'', respectively.
+#'
+#' @param dist The distribution parameter.
+#' @param model The model object.
+#' @param ... Additional arguments to be passed to other functions.
+#'
+#' @return A function with specified assumption for the model.
+#'
+#' @details
+#' Each function assigns the specified assumption to the parent environment and processes predefined measures if available.
+#'
+#' @rdname assumptions
 #' @export
 assumption1 <- function(dist){
   returnfunction <- function(model,...) {
@@ -9,6 +26,7 @@ assumption1 <- function(dist){
   return(returnfunction)
 }
 
+#' @rdname assumptions
 #' @export
 assumption2 <- function(dist){
   returnfunction <- function(model,...) {
@@ -20,6 +38,7 @@ assumption2 <- function(dist){
   return(returnfunction)
 }
 
+#' @rdname assumptions
 #' @export
 assumption3 <- function(dist){
   returnfunction <- function(model,...) {

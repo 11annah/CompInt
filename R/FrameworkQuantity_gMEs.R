@@ -4,7 +4,7 @@
 #'
 #' @param model_fit A fitted model object.
 #' @param reg_of_interest The regressor of interest for which gME values are calculated.
-#' @param integration An integration function. Default is NULL.
+#' @param integration An integration function. Default is NULL. #TOFIX ... \code{\link{assumption1}} \code{\link{assumption2}} \code{\link{assumption3}}
 #' @param seed Seed for random number generation. Default is NULL.
 #' @param ndraws Number of draws for sampling. Default is 1000.
 #' @param separate_interactions Boolean indicating whether interactions should be separated. Default is FALSE.
@@ -16,6 +16,9 @@
 #' @details This function computes gME values based on the specified model and regressor of interest. It supports various types of models including GLM and GLMM. The gME values are computed either empirically or through other standard options depending on the distribution.
 #'
 #' @note ...
+#'
+#'@references
+#' Kümpel, H. & Hoffmann, S. A formal framework for generalized reporting methods in parametric settings. ArXiv Prepr. ArXiv221102621 (2022).
 #'
 #' @examples
 #' \dontrun{
