@@ -1,4 +1,31 @@
+#' Calculate Generalized Marginal Effects (gME)
+#'
+#' This function computes generalized Marginal Effects (gME) for a given model and regressor of interest.
+#'
+#' @param model_fit A fitted model object.
+#' @param reg_of_interest The regressor of interest for which gME values are calculated.
+#' @param integration An integration function. Default is NULL.
+#' @param seed Seed for random number generation. Default is NULL.
+#' @param ndraws Number of draws for sampling. Default is 1000.
+#' @param separate_interactions Boolean indicating whether interactions should be separated. Default is FALSE.
+#' @param catRIbin Boolean indicating categorical RI binning. Default is FALSE.
+#' @param ... Additional arguments to be passed to other functions.
+#'
+#' @return A matrix containing gME values for the regressor of interest.
+#'
+#' @details This function computes gME values based on the specified model and regressor of interest. It supports various types of models including GLM and GLMM. The gME values are computed either empirically or through other standard options depending on the distribution.
+#'
+#' @note ...
+#'
+#' @examples
+#' \dontrun{
+#' model <- lm(mpg ~ cyl + disp + hp + drat, data = mtcars)
+#' get_gME(model_fit = model, reg_of_interest = "cyl")
+#' }
+#'
 #' @export
+
+
 get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
   run_in_parent(getting_situated1)
   integration(model = model)
