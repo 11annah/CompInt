@@ -111,6 +111,7 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
         result <- prepare_return(matrix(nrow = length(nonref_cats), ncol = ndraws),nonref_cats)
         }else{
           #TOFIX
+          #continue here
         }
 
         torem <- setdiff(names(EmpDat), nonref_cats)
