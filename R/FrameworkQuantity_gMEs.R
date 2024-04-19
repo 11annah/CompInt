@@ -104,14 +104,15 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
           # TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
         RIvals_prep <- dealing_with_catRI(dat=EmpDat,g_theta=eval_g_theta_at_point,RIname=reg_of_interest)
-        print(RIvals_prep[[1]][["vals"]])
+        print(RIvals_prep[[1]])
 
         if(!separate_interactions){
         run_in_parent(prepping_for_catRI,i=1)
         result <- prepare_return(matrix(nrow = length(nonref_cats), ncol = ndraws),nonref_cats)
+        print(result)
         }else{
           #TOFIX
-          #continue here
+          #continue here!
         }
 
         torem <- setdiff(names(EmpDat), nonref_cats)
