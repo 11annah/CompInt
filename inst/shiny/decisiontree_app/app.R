@@ -1,27 +1,20 @@
-# Load the shiny library
 library(shiny)
+library(bslib)
 
-# Define UI for application
-ui <- fluidPage(
-  titlePanel("Square Calculator"),
-  sidebarLayout(
-    sidebarPanel(
-      sliderInput("number", "Select a number:",
-                  min = 1, max = 100, value = 50)
-    ),
-    mainPanel(
-      textOutput("result")
-    )
-  )
+# Define UI
+ui <- page_navbar(
+  title="Specifying quantities",
+  sidebar = sidebar("Sidebar"),
+  nav_panel("What quantitiy do you want?", "Page 1 content"),
+  nav_panel("Let's specify it", "Page 2 content"),
+  nav_panel("Get your interpretation!", "Page 3content"),
+  nav_spacer(),
 )
 
 # Define server logic
-server <- function(input, output) {
-  output$result <- renderText({
-    input_number <- input$number
-    paste("Square of", input_number, "is", input_number^2)
-  })
+server <- function(input, output, session) {
+
 }
 
 # Run the application
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server)
