@@ -174,7 +174,10 @@ ui <- dashboardPage(
                  box(actionButton("D2", "Quantity: ", width = "100%",style="color: #FF0000; background-color: #F8F8F8; border-color: #FF0000"),
                      actionButton("D3", "Assumption: ", width = "100%",style="color: #0000FF; background-color: #F8F8F8; border-color: #0000FF"),
                      actionButton("D4", "Distribution: ", width = "100%",style="color: #008000; background-color: #F8F8F8; border-color: #008000"),
-                     actionButton("D4", ":", width = "100%",style="color: #008000; background-color: #F8F8F8; border-color: #008000"),
+                     actionButton("D5", "Choice 1:", width = "100%",style="color: #FFBF00; background-color: #F8F8F8; border-color: #FFBF00"),
+                     actionButton("D6", "Choice 2:", width = "100%",style="color: #FFD700; background-color: #F8F8F8; border-color: #FFD700"),
+                     actionButton("D7", "Choice 3:", width = "100%",style="color: #C2B280; background-color: #F8F8F8; border-color: #C2B280"),
+                     actionButton("D8", "Choice 4:", width = "100%",style="color: #B4C424; background-color: #F8F8F8; border-color: #B4C424"),
                      width=3
                  ),
                  box(p(id="result","Please click on the top button for result."),
@@ -242,6 +245,10 @@ server <- function(input, output, session) {
   observeEvent(input$D2, {updateTabItems(session,"tabs","page0")})
   observeEvent(input$D3, {updateTabItems(session,"tabs","page1")})
   observeEvent(input$D4, {updateTabItems(session,"tabs","page2")})
+  observeEvent(input$D5, {updateTabItems(session,"tabs","page3")})
+  observeEvent(input$D6, {updateTabItems(session,"tabs","page3")})
+  observeEvent(input$D7, {updateTabItems(session,"tabs","page3")})
+  observeEvent(input$D8, {updateTabItems(session,"tabs","page3")})
 }
 
 # Run the application

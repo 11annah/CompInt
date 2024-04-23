@@ -18,11 +18,23 @@ function check_input1(p1, p2, p3) {
         }
     }
 }
+function check_inpu2(p1)
+{if(document.getElementById("C"+p1.toString()).checked)
+  {choice_s=choice_s+"<span style='color:"+document.getElementById("D"+choice_p.toString()).style.color+"'>Choice "+p1.toString()+"</span>"+"<br>";
+   document.getElementById("D"+choice_p.toString()).innerHTML="Choice "+p1.toString();
+   ++choice_p;
+  }
+}
 
 function create_result()
-{s1=check_input1("click_message","Quantity","D2");
+{check=0;
+ choice_s="";
+ choice_p=5;
+ s1=check_input1("click_message","Quantity","D2");
  s2=check_input1("click_message_assumption","Assumption","D3");
  s3=check_input1("click_message_distribution","Distribution","D4");
+ for(i=1;i<5;++i){document.getElementById("D"+choice_p.toString()).style.visibility="visible";check_inpu2(i);}
+ for(;choice_p<9;++choice_p)document.getElementById("D"+choice_p.toString()).style.visibility="hidden";
  document.getElementById("result").innerHTML=
   "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt "+
   "ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo "+
@@ -31,5 +43,7 @@ function create_result()
   "<br>"+"<span style='color:#0000FF'>"+s2+"</span>"+"<br>"+
   "Stet clita kasd gubergren, no sea"+
   "<br>"+"<span style='color:#008000'>"+s3+"</span>"+"<br>"+
-  "takimata sanctus est Lorem ipsum dolor sit amet.";
+  "takimata sanctus est "+
+  "<br>"+choice_s+"<br>"+
+  "Lorem ipsum dolor sit amet.";
 }
