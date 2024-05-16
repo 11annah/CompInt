@@ -1,6 +1,8 @@
 library(shiny)
 library(shinydashboard)
 
+source("User_Choices.R")
+
 # Define UI
 ui <- dashboardPage(
   # Dashboard header
@@ -17,7 +19,7 @@ ui <- dashboardPage(
       )
     )
   ),
-  
+
   # Dashboard sidebar
   dashboardSidebar(
     sidebarMenu(
@@ -39,33 +41,11 @@ ui <- dashboardPage(
     # Body content (main panel)
     tabItems(
       tabItem(tabName = "page0",
-              fluidRow(
-                column(12,
-                       h2("Choose Your Quantity"),
-                       p("Please review the following options and select your preferred quantity."),
-                       br(),
-                       box(title = "Option A",
-                           "Description of Option A goes here.",
-                           align = "center",
-                           footer = actionButton("gME", "Choose Option A", icon = icon("check-circle"), width = "100%"),
-                           width=4
-                      ),
-                      box(title = "Option B",
-                          "Description of Option B goes here.",
-                          align = "center",
-                          footer = actionButton("IE", "Choose Option B", icon = icon("check-circle"), width = "100%"),
-                          width=4
-                     ),
-                     box(title = "Option C",
-                         "Description of Option C goes here.",
-                         align = "center",
-                         footer = actionButton("IpredD", "Choose Option C", icon = icon("check-circle"), width = "100%"),
-                         width=4
-                     )
-                )
-              ),
-              actionButton("clear", "Clear",icon = icon("x"), width = "100%"),
-              verbatimTextOutput("click_message")
+                click_choices_ui("quantity","Choose Your Quantity","Please review the following options and select your preferred quantity.",
+                                 noptions=3,
+                                 names=c("Option A","Option B","Option C"),
+                                 descriptions=c("Description of Option A goes here.","Description of Option B goes here.","Description of Option C goes here."),
+                                 tags=c("gME","IE","IpredD"))
       ),
       # Page 1 content
       tabItem(
@@ -193,22 +173,8 @@ ui <- dashboardPage(
 # Define server logic
 server <- function(input, output, session) {
 
-  # Track which button was clicked (quantity)
-  button_clicked <- reactiveVal(NULL)
-  # Observer to update which button was clicked
-  observeEvent(input$gME, {button_clicked("gME")})
-  observeEvent(input$IE, {button_clicked("IE")})
-  observeEvent(input$IpredD, {button_clicked("IpredD")})
-  observeEvent(input$clear, {button_clicked(NULL)})
-  # Render the message based on the button clicked
-  output$click_message <- renderText({
-    if (!is.null(button_clicked())) {
-      paste0("Button '", button_clicked(), "' was clicked.")
-    } else {
-      "No button was clicked."
-    }
-  })
-  
+  display_choice("quantity", c("gME", "IE", "IpredD"))
+
   # Track which button was clicked (assumption)
   button_clicked_assumption <- reactiveVal(NULL)
   # Observer to update which button was clicked
@@ -224,7 +190,7 @@ server <- function(input, output, session) {
       "No button was clicked."
     }
   })
-  
+
   # Track which button was clicked (distribution)
   button_clicked_distribution <- reactiveVal(NULL)
   # Observer to update which button was clicked
@@ -240,7 +206,7 @@ server <- function(input, output, session) {
       "No button was clicked."
     }
   })
-  
+
   #Track which button was clicked (result)
   observeEvent(input$D2, {updateTabItems(session,"tabs","page0")})
   observeEvent(input$D3, {updateTabItems(session,"tabs","page1")})
