@@ -25,13 +25,15 @@ ui <- dashboardPage(
     sidebarMenu(
       id ="tabs",
       # First group of pages
+      menuItem("Upload your model(s)", tabName = "upload_page", icon = icon("upload")),
       menuItem("What quantitiy do you want?", tabName = "page0", icon = icon("gear")),
       menuItem("Let's specify it", tabName = "group1", icon = icon("gears"),startExpanded = TRUE,
                menuSubItem("Choose an assumption", tabName = "page1"),
                menuSubItem("Choose distribution(s)", tabName = "page2"),
                menuSubItem("Additional choices (optional)", tabName = "page3")
       ),
-      menuItem("Get your interpretation!", tabName = "page4", icon = icon("globe"))
+      menuItem("Get your interpretation!", tabName = "page4", icon = icon("globe")),
+      menuItem("Download your results", tabName = "download_page", icon = icon("download"))
     )
   ),
 
@@ -40,6 +42,10 @@ ui <- dashboardPage(
     tags$head(tags$script(src="script.js")),
     # Body content (main panel)
     tabItems(
+      tabItem(tabName = "upload_page",
+              fluidPage(        column(width = 12,
+                                       h3("Placeholder for Upload Content")
+              ))),
       tabItem(tabName = "page0",
                 click_choices_ui("quantity","Choose Your Quantity","Please review the following options and select your preferred quantity.",
                                  noptions=3,
@@ -48,67 +54,21 @@ ui <- dashboardPage(
                                  tags=c("gME","IE","IpredD"))
       ),
       # Page 1 content
-      tabItem(
-        tabName = "page1",
-        fluidRow(
-          column(12,
-                 h2("Choose Your Assumption"),
-                 p("Please review the following options and select your preferred assumption"),
-                 br(),
-                 box(title = "Option A",
-                     "Description of Option A goes here.",
-                     align = "center",
-                     footer = actionButton("A1", "Choose Option A", icon = icon("check-circle"), width = "100%"),
-                     width=4
-                 ),
-                 box(title = "Option B",
-                     "Description of Option B goes here.",
-                     align = "center",
-                     footer = actionButton("A2", "Choose Option B", icon = icon("check-circle"), width = "100%"),
-                     width=4
-                 ),
-                 box(title = "Option C",
-                     "Description of Option C goes here.",
-                     align = "center",
-                     footer = actionButton("A3", "Choose Option C",icon = icon("check-circle"), width = "100%"),
-                     width=4
-                 )
-          )
+      tabItem(tabName = "page1",
+                click_choices_ui("assumption","Choose Your Assumption","Please review the following options and select your preferred assumption.",
+                                 noptions=3,
+                                 names=c("Option A","Option B","Option C"),
+                                 descriptions=c("Description of Option A goes here.","Description of Option B goes here.","Description of Option C goes here."),
+                                 tags=c("A1","A2","A3"))
         ),
-        actionButton("clear_assumptions", "Clear", icon = icon("x"), width = "100%"),
-        verbatimTextOutput("click_message_assumption")
-      ),
       # Page 2 content
-      tabItem(
-        tabName = "page2",
-        fluidRow(
-          column(12,
-                 h2("Choose Your Distribution"),
-                 p("Please review the following options and select your preferred distribution"),
-                 br(),
-                 box(title = "Option A",
-                     "Description of Option A goes here.",
-                     align = "center",
-                     footer = actionButton("B1", "Choose Option A", icon = icon("check-circle"), width = "100%"),
-                     width=4
-                 ),
-                 box(title = "Option B",
-                     "Description of Option B goes here.",
-                     align = "center",
-                     footer = actionButton("B2", "Choose Option B", icon = icon("check-circle"), width = "100%"),
-                     width=4
-                 ),
-                 box(title = "Option C",
-                     "Description of Option C goes here.",
-                     align = "center",
-                     footer = actionButton("B3", "Choose Option C",icon = icon("check-circle"), width = "100%"),
-                     width=4
-                 )
-          )
-        ),
-        actionButton("clear_distribution", "Clear", icon = icon("x"), width = "100%"),
-        verbatimTextOutput("click_message_distribution")
-      ),
+      tabItem(tabName = "page2",
+              click_choices_ui("distribution","Choose Your Distribution","Please review the following options and select your preferred distribution.",
+                               noptions=3,
+                               names=c("Option A","Option B","Option C"),
+                               descriptions=c("Description of Option A goes here.","Description of Option B goes here.","Description of Option C goes here."),
+                               tags=c("B1","B2","B3"))
+              ),
       # Page 3 content
       tabItem(
         tabName = "page3",
@@ -165,47 +125,23 @@ ui <- dashboardPage(
                  )
           )
         )
+      ),
+      tabItem(tabName = "download_page",
+              fluidPage(        column(width = 12,
+                                       h3("Placeholder for Download Content")
+              ))
       )
     )
-  )
-)
+    ))
+
+
 
 # Define server logic
 server <- function(input, output, session) {
 
   display_choice("quantity", c("gME", "IE", "IpredD"))
-
-  # Track which button was clicked (assumption)
-  button_clicked_assumption <- reactiveVal(NULL)
-  # Observer to update which button was clicked
-  observeEvent(input$A1, {button_clicked_assumption("A1")})
-  observeEvent(input$A2, {button_clicked_assumption("A2")})
-  observeEvent(input$A3, {button_clicked_assumption("A3")})
-  observeEvent(input$clear_assumptions, {button_clicked_assumption(NULL)})
-  # Render the message based on the button clicked
-  output$click_message_assumption <- renderText({
-    if (!is.null(button_clicked_assumption())) {
-      paste0("Button '", button_clicked_assumption(), "' was clicked.")
-    } else {
-      "No button was clicked."
-    }
-  })
-
-  # Track which button was clicked (distribution)
-  button_clicked_distribution <- reactiveVal(NULL)
-  # Observer to update which button was clicked
-  observeEvent(input$B1, {button_clicked_distribution("B1")})
-  observeEvent(input$B2, {button_clicked_distribution("B2")})
-  observeEvent(input$B3, {button_clicked_distribution("B3")})
-  observeEvent(input$clear_distribution, {button_clicked_distribution(NULL)})
-  # Render the message based on the button clicked
-  output$click_message_distribution <- renderText({
-    if (!is.null(button_clicked_distribution())) {
-      paste0("Button '", button_clicked_distribution(), "' was clicked.")
-    } else {
-      "No button was clicked."
-    }
-  })
+  display_choice("assumption", c("A1","A2","A3"))
+  display_choice("distribution", c("B1", "B2", "B3"))
 
   #Track which button was clicked (result)
   observeEvent(input$D2, {updateTabItems(session,"tabs","page0")})
