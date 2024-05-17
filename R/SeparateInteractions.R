@@ -16,8 +16,8 @@ make_interaction_data <- function(mod, data, reg_of_interest, separate_interacti
     notation <- mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]
 
     INTs <- data.frame(
-      terms = stringr::str_replace(terms, paste0("\\", notation), "_x_"),
-      expr = stringr::str_replace(terms, paste0("\\", notation), "*")
+      terms = sub(paste0("\\", notation), "_x_", terms),
+      expr = sub(paste0("\\", notation), "*", terms)
     )
 
     for (i in seq_along(INTs$terms)) {
@@ -41,8 +41,8 @@ make_interaction_data <- function(mod, data, reg_of_interest, separate_interacti
 #notation <- mod[["model_specification"]][["regs"]][["interactions"]][["notation"]]
 
 #INTs <- data.frame(
-#  terms = stringr::str_replace(terms, paste0("\\", notation), "_x_"),
-#  expr = stringr::str_replace(terms, paste0("\\", notation), "*")
+#  terms = sub(paste0("\\", notation), "_x_", terms),
+#  expr = sub(paste0("\\", notation), "*", terms)
 #)
 
 #for (i in seq_along(INTs$terms)) {
