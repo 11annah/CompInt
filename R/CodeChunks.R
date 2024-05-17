@@ -18,7 +18,7 @@ getting_situated2 <- function(envir){
     assign(variablename, list(...)[[variablename]], envir = envir)
   }
 
-  if(separate_interactions & !model[["model_specification"]][["regs"]][["interactions"]][["present"]]){stop("'seperate_interactions' is specified as TRUE, but are no interaction terms present in the model.")}
+  if(separate_interactions && !model[["model_specification"]][["regs"]][["interactions"]][["present"]]){stop("'seperate_interactions' is specified as TRUE, but are no interaction terms present in the model.")}
 }
 
 getting_inverse <- function(envir){
@@ -57,7 +57,7 @@ empirical_Int_catmet_handling <- function(envir){
 
 data_asmpt <- function(envir){
   assign("data_asmpt",data_according_to_assumptions(mod=model,assumption=assumption,newdata=newdata,reg_of_interest=reg_of_interest,RItype=RItype),envir=envir)
-  if(length(regsC)==0 | is.null(data_asmpt)){
+  if(length(regsC)==0 || is.null(data_asmpt)){
     assign("EmpDat",data_asmpt,envir=envir)
   }else{
     #if(all(regsC==reg_of_interest) & any(assumption %in% c("A.I","A.II'"))){assign("EmpDat",data_asmpt,envir=envir)

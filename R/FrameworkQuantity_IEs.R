@@ -5,10 +5,10 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
   integration(model = model)
   run_in_parent(getting_situated2)
 
-  if (!(any(reg_of_interest %in% regs(model)) | is.null(reg_of_interest))) {
+  if (!(any(reg_of_interest %in% regs(model)) || is.null(reg_of_interest))) {
     stop("'reg_of_interest' must either be a variable used for the model specification or set to NULL.")
   }
-  if (is.null(reg_of_interest) & any(assumption %in% c("A.II'"))) {
+  if (is.null(reg_of_interest) && any(assumption %in% c("A.II'"))) {
     stop("In order to calculate individualized expectations under assumptions A.II', a regressor of interest must be defined using the variable reg_of_interest.")
   }
 

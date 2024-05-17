@@ -36,10 +36,10 @@ make_linear_predictor <- function(mod, reg_of_interest = NULL, separate_interact
     stop("The 'coefs' entry of the CompInt model-object is unnamed.")
   }
 
-  model_coefficients <- paste0("theta[", 1:length(coefs), "]")
+  model_coefficients <- paste0("theta[", seq_along(coefs), "]")
 
   if (mod[["model_specification"]][["intercept"]]) {
-    if (!grepl("tercept", names(coefs)[1])) {
+    if (!grepl("tercept", names(coefs)[1], fixed = TRUE)) {
       warning("The first coefficient's name does not contain the term intercept, but is being used as intercept anyways.")
     }
     model_terms <- list(list(model_term = model_coefficients[1]))
@@ -60,7 +60,7 @@ make_linear_predictor <- function(mod, reg_of_interest = NULL, separate_interact
     indexing <- "[l]"
     REG <- names(coefs)[i]
     TERM <- paste0(model_coefficients[i], " * ", REG, indexing)
-    if (separate_interactions & !is.null(reg_of_interest)) {
+    if (separate_interactions && !is.null(reg_of_interest)) {
       if (grepl(reg_of_interest, TERM)) {
         TERM <- stringr::str_replace(TERM, INT_notation, "_x_")
       } else {
