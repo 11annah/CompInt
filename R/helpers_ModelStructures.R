@@ -24,7 +24,7 @@ list_interaction <- function(notation, term_attr) {
 }
 
 check_formula_validity <- function(regnames, data) {
-  if (any(!regnames %in% names(data))) {
+  if (!all(regnames %in% names(data))) {
     stop("All terms used in the model formula need to correspond to variable names of the specified model object's data. Please fully preprocess the data before fitting the model.")
   }
 }

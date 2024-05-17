@@ -90,8 +90,9 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
       if(RItype == "categorical"){categories <- levels(as.factor(prep_for_asmpt[[reg_of_interest]]))
         prep_for_asmpt[[reg_of_interest]] <- NULL}
       data_asmpt <- as.data.frame(do.call(expand.grid, prep_for_asmpt))
-      if(RItype == "categorical"){data_asmpt <-cbind(rep(categories,each=ceiling(nrow(df) / length(vec)))[1:nrow(data_asmpt)],data_asmpt)
-      names(data_asmpt)[1] <- reg_of_interest
+      if (RItype == "categorical"){
+        data_asmpt <-cbind(rep(categories,each=ceiling(nrow(df) / length(vec)))[seq_len(nrow(data_asmpt))],data_asmpt)
+        names(data_asmpt)[1] <- reg_of_interest
       }
     }
     names(data_asmpt) <- names(prep_for_asmpt)
@@ -101,7 +102,7 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
     if (is.null(reg_of_interest)) {
       stop("A regressor of interest needs to be specified for assumption A.II'")
     }
-    if (ncol(prep_for_asmpt) == 1|RItype == "categorical") {
+    if (ncol(prep_for_asmpt) == 1 || RItype == "categorical") {
       data_asmpt <- prep_for_asmpt
     } else {
       RI <- prep_for_asmpt[, which(names(prep_for_asmpt) == reg_of_interest)]
@@ -117,7 +118,7 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
 
 make_dummy_coded_data <- function(mod, dat, reg_of_interest = NULL, separate_interactions = FALSE) {
   check_model_class(mod, "mod")
-  if (any(!complete.cases(dat))) {
+  if (!all(complete.cases(dat))) {
     stop("The data provided for empirical integration contains NA values.")
   }
   if (isFALSE(separate_interactions)) {
@@ -158,7 +159,7 @@ Enter C for converting to categorical and N for keeping the variable numeric: "
             stop("Sorry, but you really have to decide between C and N.")
           }
         }
-        if (as.character(user_input) == "C" | catRIbin) {
+        if (as.character(user_input) == "C" || catRIbin) {
           data[, col] <- data[, col]
           names(data)[which(names(data) == col)] <- paste0(col, "1")
           data[, paste0(col, "0")] <- abs(as.numeric(data[, paste0(col, "1")]) - 1)
@@ -170,7 +171,7 @@ Enter C for converting to categorical and N for keeping the variable numeric: "
 }
 
 dealing_with_catRI <- function(dat, g_theta, RIname = "RI", separate_interactions=FALSE) {
-  if(separate_interactions & length(RIname)==1){
+  if(separate_interactions && length(RIname)==1){
     stop("If separate interactions are to be calculated, the length of the 'RIname' argument must be greater than zero.")
   }
   if(!separate_interactions){
@@ -231,7 +232,7 @@ remove_contained_lists <- function(list_of_lists) {
   ind <- numeric()
   for (i in seq_along(list_of_lists)) {
     for (j in seq_along(list_of_lists)) {
-      if (i != j & list_contains(list_of_lists[[i]], list_of_lists[[j]])) {
+      if (i != j && list_contains(list_of_lists[[i]], list_of_lists[[j]])) {
         ind <- c(ind, i)
       }
     }
@@ -303,14 +304,14 @@ merge_cols <- function(Mat, indexing) {
 list_to_vecmat <- function(list, groups, indexing) {
   Mat <- matrix("1", ncol = length(unlist(list)), nrow = length(list))
   regname_list <- list()
-  for (i in 1:nrow(Mat)) {
+  for (i in seq_len(nrow(Mat))) {
     if (i != 1) {
       before <- length(unlist(list[1:(i - 1)]))
     } else {
       before <- 0
     }
     entry <- list[[i]]
-    for (j in 1:length(entry)) {
+    for (j in seq_along(entry)) {
       dim2 <- before + j
       Mat[i, dim2] <- trimws(entry[j])
     }
@@ -320,7 +321,7 @@ list_to_vecmat <- function(list, groups, indexing) {
   if (is.null(groups)) {
     result <- Mat
   } else {
-    for (i in 1:length(groups)) {
+    for (i in seq_along(groups)) {
       merge_ind <- which(apply(Mat, 2, function(x) any(sapply(groups[[i]], function(v) grepl(v, x)))))
       ToMerge <- Mat[, merge_ind, drop = FALSE]
       merge_cols_res <- merge_cols(ToMerge, indexing)
