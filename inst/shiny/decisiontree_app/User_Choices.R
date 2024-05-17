@@ -56,6 +56,8 @@ display_choice <- function(id, button_names) {
         "No button was clicked."
       }
     })
+
+    #return(button_clicked())
   })
 }
 
