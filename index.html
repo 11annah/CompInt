@@ -56,7 +56,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/11annah/CompInt/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -69,17 +76,15 @@
 </h1>
 </div>
 <!-- badges: start -->
-<!-- badges: end -->
-<p>The goal of CompInt is to (eventually) allow users to compute all quantities from <a href="https://arxiv.org/abs/2211.02621" class="external-link">“A formal framework for generalized reporting methods in parametric settings”</a> for a variety of model objects.</p>
-<p>Currently, this package is still in mid-development.</p>
+
+<p>The goal of CompInt is to (eventually) allow users to compute all quantities from <a href="https://arxiv.org/abs/2211.02621" class="external-link">“A formal framework for generalized reporting methods in parametric settings”</a> for a variety of model objects. Currently, this package is still in mid-development.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version of CompInt from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"11annah/CompInt"</span><span class="op">)</span></span></code></pre></div>
-<p>If the required python modules are not present, call <code>py_install_CompInt()</code> to access the entire functionality of the CompInt package.</p>
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"11annah/CompInt"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -87,17 +92,26 @@
 <p>This is a basic example which shows you how to solve a common problem:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://11annah.github.io/CompInt/">CompInt</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Affairs</span>, package <span class="op">=</span> <span class="st">'AER'</span><span class="op">)</span></span>
-<span><span class="va">poisson.model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">affairs</span> <span class="op">~</span> <span class="va">.</span>,family <span class="op">=</span> <span class="st">'poisson'</span>, data <span class="op">=</span> <span class="va">Affairs</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">draws_gME_religiousness</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_gME.html">get_gME</a></span><span class="op">(</span><span class="va">poisson.model</span>,integration<span class="op">=</span><span class="fu"><a href="reference/assumptions.html">assumption3</a></span><span class="op">(</span><span class="fu">all_empirical</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,reg_of_interest <span class="op">=</span> <span class="st">"religiousness"</span>,seed<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Affairs</span>, package <span class="op">=</span> <span class="st">"AER"</span><span class="op">)</span></span>
+<span><span class="va">poisson.model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">affairs</span> <span class="op">~</span> <span class="va">.</span>, family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">Affairs</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">draws_gME_religiousness</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_gME.html">get_gME</a></span><span class="op">(</span><span class="va">poisson.model</span>, integration <span class="op">=</span> <span class="fu"><a href="reference/assumptions.html">assumption3</a></span><span class="op">(</span><span class="fu">all_empirical</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, reg_of_interest <span class="op">=</span> <span class="st">"religiousness"</span>, seed <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">draws_gME_religiousness</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">draws_IE_children</span> <span class="op">&lt;-</span> <span class="fu">get_IE</span><span class="op">(</span><span class="va">poisson.model</span>,integration<span class="op">=</span><span class="fu"><a href="reference/assumptions.html">assumption3</a></span><span class="op">(</span><span class="fu">all_empirical</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,reg_of_interest <span class="op">=</span> <span class="st">"children"</span>,seed<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="va">draws_IE_children</span> <span class="op">&lt;-</span> <span class="fu">get_IE</span><span class="op">(</span><span class="va">poisson.model</span>, integration <span class="op">=</span> <span class="fu"><a href="reference/assumptions.html">assumption3</a></span><span class="op">(</span><span class="fu">all_empirical</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, reg_of_interest <span class="op">=</span> <span class="st">"children"</span>, seed <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">draws_IE_children</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
-  </main><aside class="col-md-3"><div class="license">
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/11annah/CompInt/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/11annah/CompInt/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>GPL (&gt;= 2) | <a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a>
@@ -121,7 +135,12 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
