@@ -12,12 +12,12 @@ Authors@R: c(
 Description: This package is in the development phase.  Eventually, it
     will contain implementations of all quantities from the preprint of
     Kümpel & Hoffmann (2022).
-License: GPL (>= 2) | GPL-3
+License: GPL (>= 3)
 URL: https://11annah.github.io/CompInt/,
     https://github.com/11annah/CompInt
 BugReports: https://github.com/11annah/CompInt/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 3.6)
 Imports:
     MASS,
     progressr,
