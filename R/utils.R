@@ -35,9 +35,9 @@ attach_silent_wrapper <- function(data, code) {
 
 data_prep <- function(mod, data = NULL, separate_interactions = FALSE) {
   if (is.null(data)) {
-    if(!is.null(mod[["data"]])){
-    data <- mod[["data"]]
-    }else{
+    if (!is.null(mod[["data"]])) {
+      data <- mod[["data"]]
+    } else {
       data <- expand.grid(mod[["catreg_list"]])
     }
   }
@@ -74,24 +74,26 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
   }
 
   if (RItype == "categorical") {
-    #assign("RIcat_raw", prep_for_asmpt[[reg_of_interest]], envir = parent.frame())
-    #if (ncol(prep_for_asmpt) == 1 & assumption %in% c("A.I", "A.II'")) {
+    # assign("RIcat_raw", prep_for_asmpt[[reg_of_interest]], envir = parent.frame())
+    # if (ncol(prep_for_asmpt) == 1 & assumption %in% c("A.I", "A.II'")) {
     #  return(NULL)
-    } #else {
-    #}
-  #} else {
-    #assign("RIcat_raw", NULL, envir = parent.frame())
-  #}
+  } # else {
+  # }
+  # } else {
+  # assign("RIcat_raw", NULL, envir = parent.frame())
+  # }
 
   if (assumption == "A.I") {
     if (ncol(prep_for_asmpt) == 1) {
       data_asmpt <- prep_for_asmpt
     } else {
-      if(RItype == "categorical"){categories <- levels(as.factor(prep_for_asmpt[[reg_of_interest]]))
-        prep_for_asmpt[[reg_of_interest]] <- NULL}
+      if (RItype == "categorical") {
+        categories <- levels(as.factor(prep_for_asmpt[[reg_of_interest]]))
+        prep_for_asmpt[[reg_of_interest]] <- NULL
+      }
       data_asmpt <- as.data.frame(do.call(expand.grid, prep_for_asmpt))
-      if (RItype == "categorical"){
-        data_asmpt <-cbind(rep(categories,each=ceiling(nrow(df) / length(vec)))[seq_len(nrow(data_asmpt))],data_asmpt)
+      if (RItype == "categorical") {
+        data_asmpt <- cbind(rep(categories, each = ceiling(nrow(df) / length(vec)))[seq_len(nrow(data_asmpt))], data_asmpt)
         names(data_asmpt)[1] <- reg_of_interest
       }
     }
@@ -106,7 +108,7 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
       data_asmpt <- prep_for_asmpt
     } else {
       RI <- prep_for_asmpt[, which(names(prep_for_asmpt) == reg_of_interest)]
-      data_asmpt <- as.data.frame(cbind(RI, prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)),-which(names(prep_for_asmpt) == reg_of_interest), drop = FALSE]))
+      data_asmpt <- as.data.frame(cbind(RI, prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)), -which(names(prep_for_asmpt) == reg_of_interest), drop = FALSE]))
       names(data_asmpt)[1] <- reg_of_interest
     }
   }
@@ -150,10 +152,10 @@ binary_regs <- function(data, col, catRIbin) {
             "The regressor '", col, "' is stored as a numeric dichotomous variable.\nAs such, it could be treated as either a categorical or metric regressor.\nIf '", col, "' cannot take values than '0', '1', or 'NA', it is advisable to convert it to a categorical variable.\nOtherwise, it makes sense to keep it as numeric.\n
 Enter C for converting to categorical and N for keeping the variable numeric: "
           )
-          user_input <- readline(prompt = cat(prompt,fill=TRUE))
+          user_input <- readline(prompt = cat(prompt, fill = TRUE))
           if (!as.character(user_input) %in% c("C", "N")) {
             message("Sorry, but you have to decide between C and N.")
-            user_input <- readline(prompt = cat(prompt,fill=TRUE))
+            user_input <- readline(prompt = cat(prompt, fill = TRUE))
           }
           if (!as.character(user_input) %in% c("C", "N")) {
             stop("Sorry, but you really have to decide between C and N.")
@@ -170,39 +172,38 @@ Enter C for converting to categorical and N for keeping the variable numeric: "
   }
 }
 
-dealing_with_catRI <- function(dat, g_theta, RIname = "RI", separate_interactions=FALSE) {
-  if(separate_interactions && length(RIname)==1){
+dealing_with_catRI <- function(dat, g_theta, RIname = "RI", separate_interactions = FALSE) {
+  if (separate_interactions && length(RIname) == 1) {
     stop("If separate interactions are to be calculated, the length of the 'RIname' argument must be greater than zero.")
   }
-  if(!separate_interactions){
-  all_cats <- names(dat)[grepl(RIname, names(dat))]
-  nonref_cats <- names(which(sapply(all_cats, function(x) grepl(x, paste(deparse(g_theta), collapse = "")))))
-  }
-  if(separate_interactions){
-    all_catregs <- mod[["model_specification"]][["regs"]][["categorical"]]
-    catregs <- all_catregs[which(unlist(sapply(all_catregs,function(x)any(grepl(x,RIname)))))]
-    all_cats <- names(dat)[which(unlist(sapply(names(dat),function(x)grepl(paste(catregs, collapse = "|"),x))))]
+  if (!separate_interactions) {
+    all_cats <- names(dat)[grepl(RIname, names(dat))]
     nonref_cats <- names(which(sapply(all_cats, function(x) grepl(x, paste(deparse(g_theta), collapse = "")))))
-    }
+  }
+  if (separate_interactions) {
+    all_catregs <- mod[["model_specification"]][["regs"]][["categorical"]]
+    catregs <- all_catregs[which(unlist(sapply(all_catregs, function(x) any(grepl(x, RIname)))))]
+    all_cats <- names(dat)[which(unlist(sapply(names(dat), function(x) grepl(paste(catregs, collapse = "|"), x))))]
+    nonref_cats <- names(which(sapply(all_cats, function(x) grepl(x, paste(deparse(g_theta), collapse = "")))))
+  }
 
 
   init <- data.frame(matrix(0, nrow = 1, ncol = length(nonref_cats)))
   names(init) <- nonref_cats
 
-  if(!separate_interactions){
-  vals <- replicate(n = length(all_cats), init, simplify = FALSE)
-  names(vals) <- all_cats
-  rep1 <- mapply(function(x, y) which(names(x) %in% y), vals, names(vals))
+  if (!separate_interactions) {
+    vals <- replicate(n = length(all_cats), init, simplify = FALSE)
+    names(vals) <- all_cats
+    rep1 <- mapply(function(x, y) which(names(x) %in% y), vals, names(vals))
 
-  for (cat in names(vals)) {
-    vals[[cat]][1, rep1[[cat]]] <- 1
+    for (cat in names(vals)) {
+      vals[[cat]][1, rep1[[cat]]] <- 1
+    }
+    return(list(list(vals = vals, ref_cat = all_cats[!(all_cats %in% nonref_cats)], nonref_cats = nonref_cats)))
   }
-  return(list(list(vals = vals, ref_cat = all_cats[!(all_cats %in% nonref_cats)], nonref_cats = nonref_cats)))
-  }
-  if(separate_interactions){
+  if (separate_interactions) {
 
   }
-
 }
 
 simple_emp_int <- function(data, coef_draws, f) {
@@ -361,12 +362,7 @@ replace_values <- function(char_list, row_values) {
 }
 
 
-prepare_return <- function(matrix,rownames){
+prepare_return <- function(matrix, rownames) {
   rownames(matrix) <- rownames
   return(matrix)
 }
-
-
-
-
-

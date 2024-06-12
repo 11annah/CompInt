@@ -33,5 +33,3 @@ gsub_complex <- function(expr, string) {
 list_contains <- function(list1, list2) {
   all(sapply(list1, function(x) any(sapply(list2, function(y) all(x %in% y)))))
 }
-
-

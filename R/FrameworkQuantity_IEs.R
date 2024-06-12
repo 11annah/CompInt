@@ -13,7 +13,7 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
   }
 
   if (model[["type"]] %in% c("GLM", "GLMM")) {
-    coef_draws<-draws_from_paramdist(model=model,ndraws=ndraws,seed=seed,...)
+    coef_draws <- draws_from_paramdist(model = model, ndraws = ndraws, seed = seed, ...)
 
     linear_predictor <- make_linear_predictor(mod = model, reg_of_interest = reg_of_interest, separate_interactions = FALSE)
 
@@ -38,8 +38,8 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
         if ("refcat" %in% ellipsisvars) {
           # TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
-        RIvals_prep <- dealing_with_catRI(dat=EmpDat,g_theta=eval_g_theta_at_point,RIname=reg_of_interest)
-        run_in_parent(prepping_for_catRI,i=1)
+        RIvals_prep <- dealing_with_catRI(dat = EmpDat, g_theta = eval_g_theta_at_point, RIname = reg_of_interest)
+        run_in_parent(prepping_for_catRI, i = 1)
 
         result <- matrix(nrow = length(nonref_cats) + 1, ncol = ndraws)
         rownames(result) <- c(ref_cat, nonref_cats)
@@ -66,15 +66,15 @@ get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed =
       return(result)
     }
     if (distribution == "other_standard_opts") {
-      reticulate::source_python(system.file("python_scripts","ProbInt_LinPred.py",package = "CompInt"))
+      reticulate::source_python(system.file("python_scripts", "ProbInt_LinPred.py", package = "CompInt"))
 
       run_in_parent(int_for_RIunif_empirical)
 
       progressr::with_progress({
-        p <- progressr::progressor(along = lapply(seq_len(nrow(coef_draws)), function(x) coef_draws[x,]))
+        p <- progressr::progressor(along = lapply(seq_len(nrow(coef_draws)), function(x) coef_draws[x, ]))
         result <- apply(coef_draws, 1, function(x) {
           p(sprintf("x=%g", x))
-          integrate_LPmods(ints=ints, LinPred = gsub_complex("[l]", linear_predictor$non_vectorized), thetas = c(0, x),data = data, fun = inverse_link)
+          integrate_LPmods(ints = ints, LinPred = gsub_complex("[l]", linear_predictor$non_vectorized), thetas = c(0, x), data = data, fun = inverse_link)
         })
       })
       return(result)

@@ -1,13 +1,13 @@
-assign_to_parent <- function(name,value,pos=2){
-  assign(name,value,envir = parent.frame(pos))
+assign_to_parent <- function(name, value, pos = 2) {
+  assign(name, value, envir = parent.frame(pos))
 }
 
-process_predefined_measures <- function(dist,...){
+process_predefined_measures <- function(dist, ...) {
   execute <- dist[["output"]]
-  for(arg in names(dist[["args"]])){
-    assign_to_parent(arg,dist[["args"]][[arg]])
+  for (arg in names(dist[["args"]])) {
+    assign_to_parent(arg, dist[["args"]][[arg]])
   }
-  execute(model=model,pos=4)
+  execute(model = model, pos = 4)
 }
 
 
@@ -16,13 +16,14 @@ process_ellipsis_distributions <- function(...) {
   discrete <- list()
 
   ellipsis_list <- list(...)
-  modind <- which(names(ellipsis_list)=="model")
+  modind <- which(names(ellipsis_list) == "model")
   model <- ellipsis_list[[modint]]
   regressor_list <- ellipsis_list[-modint]
 
-  if(length(regressor_list)==0){return(NULL)
-  }else{
-    ######CONTINUE HERE!!!!!
+  if (length(regressor_list) == 0) {
+    return(NULL)
+  } else {
+    ###### CONTINUE HERE!!!!!
 
     # Iterate over the elements of the ellipsis list
     for (name in names(regressor_list)) {
@@ -42,6 +43,6 @@ process_ellipsis_distributions <- function(...) {
       }
     }
 
-    return(list(discrete=discrete,continuous=continuous))
+    return(list(discrete = discrete, continuous = continuous))
   }
 }
