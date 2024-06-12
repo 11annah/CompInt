@@ -16,10 +16,10 @@
 #'
 #' @rdname assumptions
 #' @export
-assumption1 <- function(dist){
-  returnfunction <- function(model,...) {
-  assign_to_parent("assumption","A.I")
-    if(any(class(dist)%in%"predefined_measures")){
+assumption1 <- function(dist) {
+  returnfunction <- function(model, ...) {
+    assign_to_parent("assumption", "A.I")
+    if (any(class(dist) %in% "predefined_measures")) {
       process_predefined_measures(dist)
     }
   }
@@ -28,10 +28,10 @@ assumption1 <- function(dist){
 
 #' @rdname assumptions
 #' @export
-assumption2 <- function(dist){
-  returnfunction <- function(model,...) {
-  assign_to_parent("assumption","A.II'")
-    if(any(class(dist)%in%"predefined_measures")){
+assumption2 <- function(dist) {
+  returnfunction <- function(model, ...) {
+    assign_to_parent("assumption", "A.II'")
+    if (any(class(dist) %in% "predefined_measures")) {
       process_predefined_measures(dist)
     }
   }
@@ -40,12 +40,14 @@ assumption2 <- function(dist){
 
 #' @rdname assumptions
 #' @export
-assumption3 <- function(dist){
-  returnfunction <- function(model,...) {
-  assign_to_parent("assumption","A.II''")
-    if(any(class(dist)%in%"predefined_measures")){
-      #TOFIX: extend following line
-      if(!any(class(dist)%in%"all_empirical")){stop("The selected prefefined measure is not compatible with the chosen assumption.")}
+assumption3 <- function(dist) {
+  returnfunction <- function(model, ...) {
+    assign_to_parent("assumption", "A.II''")
+    if (any(class(dist) %in% "predefined_measures")) {
+      # TOFIX: extend following line
+      if (!any(class(dist) %in% "all_empirical")) {
+        stop("The selected prefefined measure is not compatible with the chosen assumption.")
+      }
       process_predefined_measures(dist)
     }
   }
@@ -55,32 +57,32 @@ assumption3 <- function(dist){
 ################################################################################
 
 #' @export
-all_empirical <- function(newdata = NULL,subset=NULL){
-  returnfunction <- function(model,pos,...) {
-    assign_to_parent("distribution","empirical",pos=pos)
+all_empirical <- function(newdata = NULL, subset = NULL) {
+  returnfunction <- function(model, pos, ...) {
+    assign_to_parent("distribution", "empirical", pos = pos)
     if (!any(is.null(newdata) & is.null(subset))) {
-           newdat = newdata_subset_merge(newdata,subset,mod=list(...)$model)
-    }else{
-           newdat = NULL
+      newdat <- newdata_subset_merge(newdata, subset, mod = list(...)$model)
+    } else {
+      newdat <- NULL
     }
-    assign_to_parent("newdata",newdat,pos=pos)
+    assign_to_parent("newdata", newdat, pos = pos)
   }
-  return(structure(list(output=returnfunction,args=list(newdata=newdata,subset=subset)),class=c("predefined_measures","all_empirical")))
+  return(structure(list(output = returnfunction, args = list(newdata = newdata, subset = subset)), class = c("predefined_measures", "all_empirical")))
 }
 
 #' @export
-RIunif_empirical <- function(min,max,newdata = NULL,subset=NULL){
-  returnfunction <- function(model,pos,...) {
-    assign_to_parent("distribution","other_standard_opts",pos=pos)
+RIunif_empirical <- function(min, max, newdata = NULL, subset = NULL) {
+  returnfunction <- function(model, pos, ...) {
+    assign_to_parent("distribution", "other_standard_opts", pos = pos)
     if (!any(is.null(newdata) & is.null(subset))) {
-      newdat = newdata_subset_merge(newdata,subset,mod=list(...)$model)
-    }else{
-      newdat = NULL
+      newdat <- newdata_subset_merge(newdata, subset, mod = list(...)$model)
+    } else {
+      newdat <- NULL
     }
-    assign_to_parent("newdata",newdat,pos=pos)
-    assign_to_parent("ints.RIunif_empirical",list(RI=c(min,max)),pos=pos)
+    assign_to_parent("newdata", newdat, pos = pos)
+    assign_to_parent("ints.RIunif_empirical", list(RI = c(min, max)), pos = pos)
   }
-  return(structure(list(output=returnfunction,args=list(min=min,max=max,newdata=newdata,subset=subset)),class=c("predefined_measures","RIunif_empirical")))
+  return(structure(list(output = returnfunction, args = list(min = min, max = max, newdata = newdata, subset = subset)), class = c("predefined_measures", "RIunif_empirical")))
 }
 
 
@@ -89,12 +91,6 @@ RIunif_empirical <- function(min,max,newdata = NULL,subset=NULL){
 
 ################################################################################
 
-#uniform <- function(){
-  #.....
-#}
-
-
-
-
-
-
+# uniform <- function(){
+# .....
+# }

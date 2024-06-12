@@ -117,5 +117,3 @@ make_linear_predictor <- function(mod, reg_of_interest = NULL, separate_interact
 
   return(linear_predictor)
 }
-
-
