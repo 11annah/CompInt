@@ -7,7 +7,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-3972-8392")),
     person("Pat", "Callahan", role = "ctb"),
     person("Julia", "Höpler", role = "ctb"),
-    person("Maximilian", "Muecke", , "muecke.maximilian@gmail.com", role = "ctb",
+    person("Maximilian", "Muecke", role = "ctb",
            comment = c(ORCID = "0009-0000-9432-9795"))
   )
 Description: This package is in the development phase.  Eventually, it
