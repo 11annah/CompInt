@@ -21,7 +21,8 @@ Depends:
 Imports:
     MASS,
     progressr,
-    reticulate
+    reticulate,
+    stats
 Suggests: 
     knitr,
     rmarkdown
