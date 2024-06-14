@@ -1,13 +1,14 @@
-Type: Package
 Package: CompInt
-Title: Compute comparable and interpretable reporting quantities for
-    different model objects
+Title: Compute Comparable and Interpretable Reporting Quantities for
+    Different Model Objects
 Version: 0.1.0
 Authors@R: c(
     person("Hannah", "Schulz-Kümpel", , "hannah.kuempel@stat.uni-muenchen.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3972-8392")),
     person("Pat", "Callahan", role = "ctb"),
-    person("Julia", "Höpler", role = "ctb")
+    person("Julia", "Höpler", role = "ctb"),
+    person("Maximilian", "Muecke", , "muecke.maximilian@gmail.com", role = "ctb",
+           comment = c(ORCID = "0009-0000-9432-9795"))
   )
 Description: This package is in the development phase.  Eventually, it
     will contain implementations of all quantities from the preprint of
@@ -17,7 +18,7 @@ URL: https://11annah.github.io/CompInt/,
     https://github.com/11annah/CompInt
 BugReports: https://github.com/11annah/CompInt/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 3.6)
 Imports:
     MASS,
     progressr,
