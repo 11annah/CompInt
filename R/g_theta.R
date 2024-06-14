@@ -62,12 +62,12 @@ make_linear_predictor <- function(mod, reg_of_interest = NULL, separate_interact
     TERM <- paste0(model_coefficients[i], " * ", REG, indexing)
     if (separate_interactions && !is.null(reg_of_interest)) {
       if (grepl(reg_of_interest, TERM)) {
-        TERM <- stringr::str_replace(TERM, INT_notation, "_x_")
+        TERM <- sub(INT_notation, "_x_", TERM)
       } else {
-        TERM <- stringr::str_replace(TERM, INT_notation, paste0(indexing, " * "))
+        TERM <- sub(INT_notation, paste0(indexing, " * "), TERM)
       }
     } else {
-      TERM <- stringr::str_replace(TERM, INT_notation, paste0(indexing, " * "))
+      TERM <- sub(INT_notation, paste0(indexing, " * "), TERM)
     }
     model_terms[[j]] <- list(
       model_term = TERM,

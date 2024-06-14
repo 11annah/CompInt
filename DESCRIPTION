@@ -21,8 +21,7 @@ Depends:
 Imports:
     MASS,
     progressr,
-    reticulate,
-    stringr
+    reticulate
 Suggests: 
     knitr,
     rmarkdown
