@@ -28,6 +28,5 @@ The functions assumption1, assumption2, and assumption3 implement different assu
 \details{
 These functions implement different assumptions for a model.
 
-
 Each function assigns the specified assumption to the parent environment and processes predefined measures if available.
 }

@@ -20,15 +20,12 @@
 #' @references
 #' Kümpel, H. & Hoffmann, S. A formal framework for generalized reporting methods in parametric settings. ArXiv Prepr. ArXiv221102621 (2022).
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' model <- lm(mpg ~ cyl + disp + hp + drat, data = mtcars)
 #' get_gME(model_fit = model, reg_of_interest = "cyl")
 #' }
-#'
-#' @export
-
-
 get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
   run_in_parent(getting_situated1)
   integration(model = model)
@@ -78,8 +75,13 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
           # progressr::with_progress({
           # p <- progressr::progressor(along = lapply(nrow(coef_draws), function(x) coef_draws[x,]))
           result[reg, ] <- apply(coef_draws, 1, function(x) {
-            # p(sprintf("x=%g", x))
-            simplegrad(data = EmpDat, LinPred = gsub_complex("[l]", linear_predictor$non_vectorized), thetas = c(0, x), grad_variable = reg, fun = inverse_link)
+            simplegrad(
+              data = EmpDat,
+              LinPred = gsub_complex("[l]", linear_predictor$non_vectorized),
+              thetas = c(0, x),
+              grad_variable = reg,
+              fun = inverse_link
+            )
           })
           # })
         }
@@ -106,12 +108,10 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
           # TOFIX #Code for when the RI's reference category should be one that is not specified in the model
         }
         RIvals_prep <- dealing_with_catRI(dat = EmpDat, g_theta = eval_g_theta_at_point, RIname = reg_of_interest)
-        print(RIvals_prep[[1]])
 
         if (!separate_interactions) {
           run_in_parent(prepping_for_catRI, i = 1)
           result <- prepare_return(matrix(nrow = length(nonref_cats), ncol = ndraws), nonref_cats)
-          print(result)
         } else {
           # TOFIX
           # continue here!

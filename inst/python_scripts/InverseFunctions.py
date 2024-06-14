@@ -1,29 +1,31 @@
-import torch
-from torch import exp, minimum, maximum, erf, sqrt
+from typing import Callable, Optional
 
+import torch
 from scipy.stats import norm
 
-def make_inv_link_function(option):
-  
-    if option == "id":
-        def inverse_link_function(x):
-          return x
-        
-    if option == "torch_exp":
-        def inverse_link_function(x):
-          return(torch.exp(x))
 
-    if option == "torch_plogis":
-        def inverse_link_function(x):
-          result = 1 / (1 + torch.exp(-x))
-          return result
+def make_inv_link_function(option: str) -> Optional[Callable[[torch.Tensor], torch.Tensor]]:
+    def identity(x: torch.Tensor) -> torch.Tensor:
+        return x
 
-    if option == "torch_inv_probit":
-        def inverse_link_function(x):
-          epsilon = 2.220446049250313e-16
-          thresh = -torch.tensor(norm.ppf(epsilon), dtype=torch.double)
-          x = torch.minimum(torch.maximum(x, -thresh), thresh)
-          result = 0.5 * (1 + torch.erf(x / sqrt(torch.tensor(2.0, dtype=torch.double))))
-          return result
-      
-    return inverse_link_function
+    def torch_exp(x: torch.Tensor) -> torch.Tensor:
+        return torch.exp(x)
+
+    def torch_plogis(x: torch.Tensor) -> torch.Tensor:
+        return 1 / (1 + torch.exp(-x))
+
+    def torch_inv_probit(x: torch.Tensor) -> torch.Tensor:
+        epsilon = 2.220446049250313e-16
+        thresh = -torch.tensor(norm.ppf(epsilon), dtype=torch.double)
+        x = torch.minimum(torch.maximum(x, -thresh), thresh)
+        return 0.5 * (
+            1 + torch.erf(x / torch.sqrt(torch.tensor(2.0, dtype=torch.double)))
+        )
+
+    options = {
+        "id": identity,
+        "torch_exp": torch_exp,
+        "torch_plogis": torch_plogis,
+        "torch_inv_probit": torch_inv_probit,
+    }
+    return options.get(option)
