@@ -4,7 +4,9 @@ import torch
 from scipy.stats import norm
 
 
-def make_inv_link_function(option: str) -> Optional[Callable[[torch.Tensor], torch.Tensor]]:
+def make_inv_link_function(
+    option: str,
+) -> Optional[Callable[[torch.Tensor], torch.Tensor]]:
     def identity(x: torch.Tensor) -> torch.Tensor:
         return x
 

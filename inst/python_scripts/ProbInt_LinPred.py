@@ -1,18 +1,25 @@
 from functools import reduce
 from operator import mul
+from typing import Optional
 
 import torch
-from InverseFunctions import make_inv_link_function
 from torchquad import MonteCarlo, set_up_backend
+
+from InverseFunctions import make_inv_link_function
 
 set_up_backend("torch", data_type="float32")
 mc = MonteCarlo()
 
-def integrate_LPmods(ints, LinPred, thetas, data=None, fun=None, grad_variable=None):
-    if fun is not None:
-        inv_link_fun = make_inv_link_function(fun)
-    else:
-        inv_link_fun = None
+
+def integrate_LPmods(
+    ints,
+    LinPred,
+    thetas,
+    data=None,
+    fun: Optional[str] = None,
+    grad_variable=None,
+):
+    inv_link_fun = make_inv_link_function(fun) if fun is not None else None
 
     if data is not None:
         tensor_dict = {

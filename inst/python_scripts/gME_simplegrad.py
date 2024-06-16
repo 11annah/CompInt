@@ -1,14 +1,18 @@
 from typing import Optional
 
 import torch
+
 from InverseFunctions import make_inv_link_function
 
 
-def simplegrad(data, LinPred: str, thetas, grad_variable: str, fun: Optional[str]=None):
-    if fun is not None:
-        inv_link_fun = make_inv_link_function(fun)
-    else:
-        inv_link_fun = None
+def simplegrad(
+    data,
+    LinPred,
+    thetas,
+    grad_variable,
+    fun: Optional[str] = None,
+):
+    inv_link_fun = make_inv_link_function(fun) if fun is not None else None
 
     tensor_dict = {
         key: torch.tensor(value, dtype=torch.float64, requires_grad=True)
@@ -35,7 +39,3 @@ def simplegrad(data, LinPred: str, thetas, grad_variable: str, fun: Optional[str
     final_res = grad_for_theta(theta=torch.tensor(thetas, dtype=torch.double))
 
     return final_res
-
-
-def testing(coef_draws):
-    print(torch.tensor(coef_draws, torch.double))
