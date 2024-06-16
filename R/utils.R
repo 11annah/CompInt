@@ -1,3 +1,7 @@
+`%||%` <- function(x, y) {
+  if (is.null(x)) y else x
+}
+
 assumptionstop <- function(assumption) {
   if (is.null(assumption)) {
     stop("TBD #TOFIX ")
@@ -5,33 +9,35 @@ assumptionstop <- function(assumption) {
 }
 
 check_model_class <- function(model, inputname) {
-  message <- paste0("Input ", inputname, " is not of the expected class (CompInt_model).")
+  message <- paste0(
+    "Input ", inputname, " is not of the expected class (CompInt_model)."
+  )
   if (!inherits(model, "CompInt_model")) {
     stop(message)
   }
 }
 
-
 reg_naming_check <- function(mod) {
   regs <- regs(mod)
   contained <- sapply(regs, function(element1) any(sapply(regs, function(element2) grepl(element1, element2) && element1 != element2)))
   if (any(contained)) {
-    stop(paste0("The name of the regressor(s) '", paste(regs[contained], collapse = " & "), "' is fully contained within another regressor name.\nUnfortunately, this is incompatible with the CompInt package's functionality.\nPlease rename the regressor(s) accordingly."))
+    stop(
+      "The name of the regressor(s) '",
+      paste(regs[contained], collapse = " & "),
+      "' is fully contained within another regressor
+      name.\nUnfortunately, this is incompatible with the CompInt package's
+      functionality.\nPlease rename the regressor(s) accordingly."
+    )
   }
 }
-
 
 attach_silent_wrapper <- function(data, code) {
   for (key in colnames(data)) {
     assign(key, data[[key]], envir = parent.frame())
   }
   eval(parse(text = code), envir = parent.frame())
-
   rm(list = colnames(data), envir = parent.frame())
 }
-
-
-
 
 data_prep <- function(mod, data = NULL, separate_interactions = FALSE) {
   if (is.null(data)) {
@@ -43,29 +49,30 @@ data_prep <- function(mod, data = NULL, separate_interactions = FALSE) {
   }
   dat <- data[, regs(mod), drop = FALSE]
   dat <- dat[complete.cases(dat), , drop = FALSE]
-
-  return(dat)
+  dat
 }
 
 newdata_subset_merge <- function(newdata, subset, mod) {
   if (is.null(subset)) {
     return(newdata)
-  } else {
-    if (is.null(newdata)) {
-      newdata <- mod[["data"]]
-    }
-    output <- newdata[subset, ]
-    return(output)
   }
+  if (is.null(newdata)) {
+    newdata <- mod[["data"]]
+  }
+  output <- newdata[subset, ]
+  output
 }
 
-
-
-##
-data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL, reg_of_interest = NULL, RItype = "metric") {
+data_according_to_assumptions <- function(mod,
+                                          assumption = NULL,
+                                          newdata = NULL,
+                                          reg_of_interest = NULL,
+                                          RItype = "metric") {
   assumptionstop(assumption)
   if (!RItype %in% c("metric", "categorical")) {
-    stop("The variable 'RItype' gives the data type of the regressor of interest.\nTherefore,it has to be equal to either 'metric' or 'categorical'.")
+    stop(
+      "The variable 'RItype' gives the data type of the regressor of interest.\nTherefore,it has to be equal to either 'metric' or 'categorical'."
+    )
   }
 
   prep_for_asmpt <- data_prep(mod, data = newdata)
@@ -93,7 +100,10 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
       }
       data_asmpt <- as.data.frame(do.call(expand.grid, prep_for_asmpt))
       if (RItype == "categorical") {
-        data_asmpt <- cbind(rep(categories, each = ceiling(nrow(df) / length(vec)))[seq_len(nrow(data_asmpt))], data_asmpt)
+        data_asmpt <- cbind(
+          rep(categories, each = ceiling(nrow(df) / length(vec)))[seq_len(nrow(data_asmpt))],
+          data_asmpt
+        )
         names(data_asmpt)[1] <- reg_of_interest
       }
     }
@@ -108,15 +118,18 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
       data_asmpt <- prep_for_asmpt
     } else {
       RI <- prep_for_asmpt[, which(names(prep_for_asmpt) == reg_of_interest)]
-      data_asmpt <- as.data.frame(cbind(RI, prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)), -which(names(prep_for_asmpt) == reg_of_interest), drop = FALSE]))
+      data_asmpt <- as.data.frame(
+        cbind(
+          RI,
+          prep_for_asmpt[rep(seq_len(nrow(prep_for_asmpt)), each = length(RI)), -which(names(prep_for_asmpt) == reg_of_interest), drop = FALSE]
+        )
+      )
       names(data_asmpt)[1] <- reg_of_interest
     }
   }
 
-  return(data_asmpt)
+  data_asmpt
 }
-
-
 
 make_dummy_coded_data <- function(mod, dat, reg_of_interest = NULL, separate_interactions = FALSE) {
   check_model_class(mod, "mod")
@@ -131,13 +144,13 @@ make_dummy_coded_data <- function(mod, dat, reg_of_interest = NULL, separate_int
   DCdat <- dat
   for (i in seq_along(cat_vars)) {
     if (!cat_vars[i] %in% names(DCdat)) {
-      stop(paste0("Variable '", cat_vars[i], "' not found in the data frame of observations."))
+      stop("Variable '", cat_vars[i], "' not found in the data frame of observations.")
     }
     DCdat <- cbind(DCdat, model.matrix(~ 0 + as.factor(DCdat[[cat_vars[i]]])))
     DCdat <- DCdat[, !names(DCdat) %in% cat_vars[i], drop = FALSE]
     names(DCdat) <- sub("as.factor\\(DCdat\\[\\[cat_vars\\[i\\]\\]\\])", cat_vars[i], names(DCdat))
   }
-  return(DCdat)
+  DCdat
 }
 
 
@@ -208,21 +221,21 @@ dealing_with_catRI <- function(dat, g_theta, RIname = "RI", separate_interaction
 
 simple_emp_int <- function(data, coef_draws, f) {
   environment(f) <- environment()
-  attach_silent_wrapper(data = data, code = "
-output <- apply(coef_draws,1,function(x){sum(f(theta=x,l=1:nrow(data)))/nrow(data)})")
-  return(output)
+  attach_silent_wrapper(
+    data = data,
+    code = "output <- apply(coef_draws,1,function(x){sum(f(theta=x,l=1:nrow(data)))/nrow(data)})"
+  )
+  output
 }
-
 
 wich_reg_is_involved <- function(met_or_cat, mod, term) {
   logical <- unlist(sapply(mod[["model_specification"]][["regs"]][[met_or_cat]], function(y) grepl(y, term)))
   if (is.null(logical)) {
-    return(NULL)
+    NULL
   } else {
     mod[["model_specification"]][["regs"]][[met_or_cat]][which(logical)]
   }
 }
-
 
 listels_by_name <- function(list, name) {
   lapply(list, `[[`, name)
@@ -241,7 +254,7 @@ remove_contained_lists <- function(list_of_lists) {
   if (length(ind) != 0) {
     result <- result[-ind]
   }
-  return(result)
+  result
 }
 
 create_CatInt_groups <- function(vectors) {
@@ -254,12 +267,9 @@ create_CatInt_groups <- function(vectors) {
   }
 
   groups <- unique(lapply(do.call(c, groups[lengths(groups) > 0]), unname))
-
   unique_groups <- remove_contained_lists(groups)
-
-  return(unique_groups)
+  unique_groups
 }
-
 
 merge_vectors <- function(list_of_vectors) {
   result <- list_of_vectors
@@ -277,16 +287,14 @@ merge_vectors <- function(list_of_vectors) {
   }
 
   result <- result[!merged]
-  return(result)
+  result
 }
-
 
 merge_linpred_terms <- function(termlist) {
   termlist <- unlist(listels_by_name(list = termlist, name = "model_term"))
   termlist[2:length(termlist)] <- paste0("+ ", termlist[2:length(termlist)])
-  return(paste(termlist, collapse = " "))
+  paste(termlist, collapse = " ")
 }
-
 
 merge_cols <- function(Mat, indexing) {
   result <- character(nrow(Mat))
@@ -299,7 +307,7 @@ merge_cols <- function(Mat, indexing) {
       regnames <- unique(c(regnames, unname(sapply(trimws(Mat[i, which(Mat[i, ] != "1")]), function(x) gsub_complex(indexing, x)))))
     }
   }
-  return(list(result, regnames))
+  list(result, regnames)
 }
 
 list_to_vecmat <- function(list, groups, indexing) {
@@ -342,27 +350,27 @@ list_to_vecmat <- function(list, groups, indexing) {
   }
   regname_list <- lapply(regname_list, unname)
   result <- apply(Mat, c(1, 2), function(x) gsub_complex(indexing, x))
-  return(list(result, regname_list))
+  list(result, regname_list)
 }
-
-
 
 replace_values <- function(char_list, row_values) {
   return_list <- list()
-  attach_silent_wrapper(data = as.data.frame(row_values), code = "
-                        for(i in 1:length(char_list)){
-                        return_list[[i]] <- list()
-                        for(j in 1:length(unlist(char_list[[i]]))){
-                        return_list[[i]][[j]] <- eval(parse(text=
-                        paste0('c(',paste(unlist(char_list[[i]])[j],collapse=','),')')
-                        ))
-                        names(return_list[[i]])[j] <- unlist(char_list[[i]])[j]
-                        }}")
-  return(return_list)
+  attach_silent_wrapper(
+    data = as.data.frame(row_values),
+    code = "
+      for(i in 1:length(char_list)){
+      return_list[[i]] <- list()
+      for(j in 1:length(unlist(char_list[[i]]))){
+      return_list[[i]][[j]] <- eval(parse(text=
+      paste0('c(',paste(unlist(char_list[[i]])[j],collapse=','),')')
+      ))
+      names(return_list[[i]])[j] <- unlist(char_list[[i]])[j]
+      }}"
+  )
+  return_list
 }
-
 
 prepare_return <- function(matrix, rownames) {
   rownames(matrix) <- rownames
-  return(matrix)
+  matrix
 }

@@ -16,13 +16,16 @@ make_g_theta <- function(model_type, linear_predictor = NULL, inverse_link = NUL
     } else {
       if (is.null(inverse_link)) {
         g_theta <- paste0("sapply(l,function(l)", linear_predictor$vectorized, ")")
-        warning("No inverse link function was specified, which is generally not intended. Returning linear predictor.")
+        warning(
+          "No inverse link function was specified, which is generally not
+          intended. Returning linear predictor."
+        )
       } else {
         g_theta <- paste0(inverse_link, "(", paste0("sapply(l,function(l)", linear_predictor$vectorized, ")"), ")")
       }
     }
   }
-  return(g_theta)
+  g_theta
 }
 
 
@@ -114,6 +117,5 @@ make_linear_predictor <- function(mod, reg_of_interest = NULL, separate_interact
     non_vectorized = linpred_novec
   )
 
-
-  return(linear_predictor)
+  linear_predictor
 }

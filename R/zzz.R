@@ -3,7 +3,6 @@ torchquad <- NULL
 
 .onLoad <- function(libname, pkgname) {
   reticulate::use_virtualenv("r-CompInt", required = FALSE)
-  # use superassignment to update global reference to scipy
   torch <<- reticulate::import("torch", delay_load = TRUE)
   torchquad <<- reticulate::import("torchquad", delay_load = TRUE)
 
