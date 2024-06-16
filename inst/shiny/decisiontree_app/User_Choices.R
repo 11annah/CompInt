@@ -1,5 +1,5 @@
-click_choices_ui <- function(id, title, subtitle, noptions, names, descriptions, tags) {
-  if (length(names) != length(descriptions)) {
+if (length(names) != length(descriptions)) {
+  click_choices_ui <- function(id, title, subtitle, noptions, names, descriptions, tags) {
     stop("The length of names and descriptions does not match.")
   }
   if (length(names) != length(tags)) {
@@ -15,12 +15,14 @@ click_choices_ui <- function(id, title, subtitle, noptions, names, descriptions,
     p(subtitle),
     fluidRow(
       lapply(1:noptions, function(i) {
-        column(width = 4,
-               div(class = "box",
-                   h3(names[i]),
-                   p(descriptions[i]),
-                   actionButton(ns(tags[i]), paste0('Choose ', names[i]), icon = icon('check-circle'), width = '100%')
-               )
+        column(
+          width = 4,
+          div(
+            class = "box",
+            h3(names[i]),
+            p(descriptions[i]),
+            actionButton(ns(tags[i]), paste0("Choose ", names[i]), icon = icon("check-circle"), width = "100%")
+          )
         )
       }),
       actionButton(ns("clear"), "Clear", icon = icon("x"), width = "100%"),
@@ -28,7 +30,6 @@ click_choices_ui <- function(id, title, subtitle, noptions, names, descriptions,
     )
   )
   do.call(tagList, ui_elements)
-
 }
 
 
@@ -56,10 +57,5 @@ display_choice <- function(id, button_names) {
         "No button was clicked."
       }
     })
-
-    #return(button_clicked())
   })
 }
-
-
-
