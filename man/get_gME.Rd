@@ -49,7 +49,6 @@ This function computes gME values based on the specified model and regressor of 
 model <- lm(mpg ~ cyl + disp + hp + drat, data = mtcars)
 get_gME(model_fit = model, reg_of_interest = "cyl")
 }
-
 }
 \references{
 Kümpel, H. & Hoffmann, S. A formal framework for generalized reporting methods in parametric settings. ArXiv Prepr. ArXiv221102621 (2022).
