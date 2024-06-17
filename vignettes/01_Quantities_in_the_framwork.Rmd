@@ -1,0 +1,18 @@
+---
+title: "Quantities in the framework"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quantities}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+![Caption for the GraphFramework_Flow.png)

@@ -4,7 +4,7 @@
 \name{CompInt-package}
 \alias{CompInt}
 \alias{CompInt-package}
-\title{CompInt: Compute comparable and interpretable reporting quantities for different model objects}
+\title{CompInt: Compute Comparable and Interpretable Reporting Quantities for Different Model Objects}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
@@ -26,6 +26,7 @@ Other contributors:
 \itemize{
   \item Pat Callahan [contributor]
   \item Julia Höpler [contributor]
+  \item Maximilian Muecke (\href{https://orcid.org/0009-0000-9432-9795}{ORCID}) [contributor]
 }
 
 }
