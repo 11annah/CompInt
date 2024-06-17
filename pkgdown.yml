@@ -2,8 +2,9 @@ pandoc: 3.1.11
 pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
+  01_Quantities_in_the_framwork: 01_Quantities_in_the_framwork.html
   Integration: Integration.html
-last_built: 2024-06-16T19:49Z
+last_built: 2024-06-17T09:36Z
 urls:
   reference: https://11annah.github.io/CompInt/reference
   article: https://11annah.github.io/CompInt/articles
