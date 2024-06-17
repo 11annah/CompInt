@@ -23,6 +23,10 @@ You can install the development version of CompInt from
 ``` r
 # install.packages("pak")
 pak::pak("11annah/CompInt")
+
+# Alternatively, via devtools:
+# install.packages("devtools")
+devtools::install_github("11annah/CompInt")
 ```
 
 ## Example
