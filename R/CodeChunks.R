@@ -26,25 +26,28 @@ getting_situated2 <- function(envir) {
 }
 
 getting_inverse <- function(envir) {
-  if (!"inverse_link" %in% ellipsisvars) {
-    if (!model[["model_specification"]][["family"]][["Link"]] %in% Inverse.Functions[["Link"]]) {
-      stop("Unfortunately, there is no default inverse link function for the given model's Link='", model[["model_specification"]][["family"]][["Link"]], "'.\n Please specify the variable 'inverse_link' in the function call")
-    } else {
-      assign("inverse_link", Inverse.Functions[["Inverse"]][which(Inverse.Functions[["Link"]] == model[["model_specification"]][["family"]][["Link"]])], envir = envir)
-    }
+  if ("inverse_link" %in% ellipsisvars) {
+    return()
   }
+  if (!model[["model_specification"]][["family"]][["Link"]] %in% Inverse.Functions[["Link"]]) {
+    stop(
+      "Unfortunately, there is no default inverse link function for the given model's Link='",
+      model[["model_specification"]][["family"]][["Link"]],
+      "'.\n Please specify the variable 'inverse_link' in the function call"
+    )
+  }
+  assign(
+    "inverse_link",
+    Inverse.Functions[["Inverse"]][which(Inverse.Functions[["Link"]] == model[["model_specification"]][["family"]][["Link"]])],
+    envir = envir
+  )
 }
-
 
 empirical_Int_catmet_handling <- function(envir) {
   assign("regsM", model[["model_specification"]][["regs"]][["metric"]], envir = envir)
   assign("regsC", model[["model_specification"]][["regs"]][["categorical"]], envir = envir)
 
-  assign("Check", if (is.null(newdata)) {
-    model[["data"]]
-  } else {
-    newdata
-  }, envir = envir)
+  assign("Check", newdata %||% model[["data"]], envir = envir)
   assign("is.bin", binary_regs(Check, col = reg_of_interest, catRIbin = catRIbin), envir = envir)
   if (!is.null(is.bin)) {
     assign("newdata", is.bin, envir = envir)
@@ -68,17 +71,28 @@ empirical_Int_catmet_handling <- function(envir) {
 }
 
 data_asmpt <- function(envir) {
-  assign("data_asmpt", data_according_to_assumptions(mod = model, assumption = assumption, newdata = newdata, reg_of_interest = reg_of_interest, RItype = RItype), envir = envir)
+  assign(
+    "data_asmpt",
+    data_according_to_assumptions(
+      mod = model, assumption = assumption, newdata = newdata, reg_of_interest = reg_of_interest, RItype = RItype
+    ),
+    envir = envir
+  )
   if (length(regsC) == 0 || is.null(data_asmpt)) {
     assign("EmpDat", data_asmpt, envir = envir)
   } else {
     # if(all(regsC==reg_of_interest) & any(assumption %in% c("A.I","A.II'"))){assign("EmpDat",data_asmpt,envir=envir)
     # }else{
-    assign("EmpDat", make_dummy_coded_data(mod = model, dat = data_asmpt, reg_of_interest = reg_of_interest, separate_interactions = separate_interactions), envir = envir)
+    assign(
+      "EmpDat",
+      make_dummy_coded_data(
+        mod = model, dat = data_asmpt, reg_of_interest = reg_of_interest, separate_interactions = separate_interactions
+      ),
+      envir = envir
+    )
     # }
   }
 }
-
 
 prepping_for_catRI <- function(envir, i) {
   assign("RIvals", RIvals_prep[[i]][["vals"]], envir = envir)
@@ -86,13 +100,13 @@ prepping_for_catRI <- function(envir, i) {
   assign("nonref_cats", RIvals_prep[[i]][["nonref_cats"]], envir = envir)
 }
 
-
-
 int_for_RIunif_empirical <- function(envir) {
   if (exists("ints.RIunif_empirical")) {
     data_rest <- data_prep(mod = model, data = newdata, separate_interactions = separate_interactions)
     data_rest <- data_rest[, -which(names(data_rest) == reg_of_interest), drop = FALSE]
-    EmpDat <- make_dummy_coded_data(mod = model, dat = data_rest, reg_of_interest = reg_of_interest, separate_interactions = separate_interactions)
+    EmpDat <- make_dummy_coded_data(
+      mod = model, dat = data_rest, reg_of_interest = reg_of_interest, separate_interactions = separate_interactions
+    )
     if (assumption == "A.I") {
       data <- as.data.frame(do.call(expand.grid, EmpDat))
     } else {

@@ -26,7 +26,8 @@ Imports:
     stats
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    shiny
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

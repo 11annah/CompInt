@@ -96,13 +96,17 @@ model_transform <- function(model_fit, data) {
   }
   if ("logistf" %in% class(model_fit)) {
     if (is.null(data)) {
-      stop("Model fits of the class 'logistf' do not store the data used to fit them.\n Please specify the variable 'data' in the function call.")
-    } else {
-      return(logistf_to_compint(model_fit, data))
+      stop(
+        "Model fits of the class 'logistf' do not store the data used to fit them.\n Please specify the variable 'data' in the function call."
+      )
     }
-  } else {
-    stop(paste0("The CompInt package does not offer automatic transform of model fits of class '", class(model_fit), "'.\n Please use the 'various_to_compint' function to manually transform this object first."))
+    return(logistf_to_compint(model_fit, data))
   }
+  stop(
+    "The CompInt package does not offer automatic transform of model fits of class '",
+    class(model_fit),
+    "'.\n Please use the 'various_to_compint' function to manually transform this object first."
+  )
 }
 
 
@@ -114,15 +118,14 @@ model_transform <- function(model_fit, data) {
 ################################################################################
 
 #' @export
-coef.CompInt_model <- function(x, ...) {
-  return(x[["pseudo_posterior"]][["args"]][["coefs"]])
+coef.CompInt_model <- function(object, ...) {
+  object[["pseudo_posterior"]][["args"]][["coefs"]]
 }
 
 #' @export
-vcov.CompInt_model <- function(x, ...) {
-  return(x[["pseudo_posterior"]][["args"]][["vcov"]])
+vcov.CompInt_model <- function(object, ...) {
+  object[["pseudo_posterior"]][["args"]][["vcov"]]
 }
-
 
 ################################################################################
 
@@ -155,8 +158,10 @@ vcov.CompInt_model <- function(x, ...) {
 draws_from_paramdist <- function(model, ndraws = 1000, seed = NULL, ...) {
   check_model_class(model, "model")
   if (is.null(seed)) {
-    stop("Generating draws from the parameter distribution is a pseudo random process. Please specify a seed.")
+    stop(
+      "Generating draws from the parameter distribution is a pseudo random process. Please specify a seed."
+    )
   }
   set.seed(seed)
-  return(model[["pseudo_posterior"]][["fun"]](model = model, ndraws = ndraws, ...))
+  model[["pseudo_posterior"]][["fun"]](model = model, ndraws = ndraws, ...)
 }

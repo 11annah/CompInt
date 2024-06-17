@@ -34,7 +34,7 @@ def integrate_LPmods(
     theta = torch.tensor(thetas, dtype=torch.double)
     domains = list(ints.values())
 
-    def function(x):
+    def fn(x):
         if grad_variable is None:
             x_values = [
                 x[:, i].repeat(len(list(data.values())[0]), 1) for i in range(x.size(1))
@@ -75,7 +75,7 @@ def integrate_LPmods(
         return result
 
     final_result = mc.integrate(
-        function,
+        fn,
         dim=len(domains),
         N=10000,
         integration_domain=domains,
