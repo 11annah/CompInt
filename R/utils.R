@@ -60,6 +60,23 @@ newdata_subset_merge <- function(newdata, subset, mod) {
 }
 
 
+convert_df_types <- function(df1, df2) {
+  # Ensure df1 and df2 have the same column names
+  if (!all(names(df1) %in% names(df2)) || !all(names(df2) %in% names(df1))) {
+    stop("Column names of df1 and df2 must match.")
+  }
+
+  # Iterate over each column in df2
+  for (col in names(df2)) {
+    # Get the data type of the column in df1
+    target_type <- typeof(df1[[col]])
+
+    # Convert the column in df2 to the same type as df1
+    df2[[col]] <- as(df2[[col]], target_type)
+  }
+
+  return(df2)
+}
 
 ##
 data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL, reg_of_interest = NULL, RItype = "metric") {
@@ -92,7 +109,8 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
       #  prep_for_asmpt[[reg_of_interest]] <- NULL
 
       data_asmpt <- as.data.frame(do.call(expand.grid, c(apply(prep_for_asmpt,2,unique),stringsAsFactors=FALSE)))
-    }
+      data_asmpt <- convert_df_types(prep_for_asmpt,data_asmpt)
+      }
       #if (RItype == "categorical") {
       #  data_asmpt <- cbind(rep(categories, each = ceiling(nrow(df) / length(vec)))[seq_len(nrow(data_asmpt))], data_asmpt)
       #  names(data_asmpt)[1] <- reg_of_interest
