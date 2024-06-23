@@ -131,7 +131,6 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
       names(data_asmpt)[1] <- reg_of_interest
     }
   }
-  print(apply(data_asmpt,2,function(x)return(c(class(x),typeof(x)))))
   return(data_asmpt)
 }
 
