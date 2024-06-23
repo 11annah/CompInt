@@ -91,7 +91,7 @@ data_according_to_assumptions <- function(mod, assumption = NULL, newdata = NULL
       #  categories <- levels(as.factor(prep_for_asmpt[[reg_of_interest]]))
       #  prep_for_asmpt[[reg_of_interest]] <- NULL
 
-      data_asmpt <- as.data.frame(do.call(expand.grid, apply(prep_for_asmpt,2,unique)))
+      data_asmpt <- as.data.frame(do.call(expand.grid, c(apply(prep_for_asmpt,2,unique),stringsAsFactors=FALSE)))
     }
       #if (RItype == "categorical") {
       #  data_asmpt <- cbind(rep(categories, each = ceiling(nrow(df) / length(vec)))[seq_len(nrow(data_asmpt))], data_asmpt)
