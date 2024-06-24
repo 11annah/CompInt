@@ -45,6 +45,46 @@ glm_to_compint <- function(model) {
   )
 }
 
+brms_to_compint <- function(model) {
+  original_formula <- get_original_formula(model)
+  data <- model$data
+  term_attr <- attributes(terms(model))
+
+  check_formula_validity(names(term_attr$dataClasses), data)
+
+  structure(
+    list(
+      model = model,
+      data = model$data,
+      catreg_list = NULL,
+      formula = original_formula,
+      type = "GLM",
+      model_specification = list(
+        family = make_modfam(family(model)[[1]], family(model)[[2]]),
+        regs = list(
+          categorical = intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses != "numeric")], term_attr$term.labels),
+          metric = intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses == "numeric")], term_attr$term.labels),
+          interactions = list_interaction(notation = ":", term_attr = term_attr)
+        ),
+        intercept = term_attr$intercept == 1
+      ),
+      inference = "frequentist",
+      pseudo_posterior = list(
+        args = list(coefs = coef(model), vcov = vcov(model)),
+        fun = function(model, ndraws, ...) {
+          MASS::mvrnorm(
+            n = ndraws, mu = model[["pseudo_posterior"]][["args"]][["coefs"]],
+            Sigma = model[["pseudo_posterior"]][["args"]][["vcov"]], ...
+          )
+        }
+      )
+    ),
+    class = c("CompInt_model", "from brm")
+  )
+}
+
+
+
 
 #' @describeIn Changing-model-structures Transforms a logistf model into a CompInt model
 #' @export
