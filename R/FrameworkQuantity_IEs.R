@@ -1,5 +1,5 @@
 #' @export
-get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, catRIbin = FALSE, ...) {
+get_IE <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 10000, catRIbin = FALSE, ...) {
   separate_interactions <- FALSE
   run_in_parent(getting_situated1)
   integration(model = model)

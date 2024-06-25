@@ -26,7 +26,7 @@
 #' model <- lm(mpg ~ cyl + disp + hp + drat, data = mtcars)
 #' get_gME(model_fit = model, reg_of_interest = "cyl")
 #' }
-get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 1000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
+get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed = NULL, ndraws = 10000, separate_interactions = FALSE, catRIbin = FALSE, ...) {
   run_in_parent(getting_situated1)
   integration(model = model)
   run_in_parent(getting_situated2)
