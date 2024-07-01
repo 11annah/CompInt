@@ -46,7 +46,7 @@ assumption3 <- function(dist) {
     if (any(class(dist) %in% "predefined_measures")) {
       # TOFIX: extend following line
       if (!any(class(dist) %in% "all_empirical")) {
-        stop("The selected prefefined measure is not compatible with the chosen assumption.")
+        stop("The selected predefined measure is not compatible with the chosen assumption.")
       }
       process_predefined_measures(dist)
     }

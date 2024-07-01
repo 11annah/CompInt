@@ -152,9 +152,9 @@ get_gME <- function(model_fit, reg_of_interest = NULL, integration = NULL, seed 
       run_in_parent(int_for_RIunif_empirical)
 
       progressr::with_progress({
-        p <- progressr::progressor(along = lapply(seq_len(nrow(coef_draws)), function(x) coef_draws[x, ]))
+        #p <- progressr::progressor(along = lapply(seq_len(nrow(coef_draws)), function(x) coef_draws[x, ]))
         result <- apply(coef_draws, 1, function(x) {
-          p(sprintf("x=%g", x))
+          #p(sprintf("x=%g", x))
           integrate_LPmods(ints = ints, data = data, LinPred = gsub_complex("[l]", linear_predictor$non_vectorized), thetas = c(0, x), grad_variable = reg_of_interest, fun = inverse_link)
         })
       })
