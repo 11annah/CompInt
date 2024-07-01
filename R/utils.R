@@ -164,7 +164,7 @@ binary_regs <- function(data, col, catRIbin) {
     if (is.numeric(data[[col]])) {
       # Check for values other than NA, 0, and 1
       unique_values <- unique(data[[col]][!is.na(data[[col]])])
-      if (all(unique_values %in% c(0, 1))) {
+      if (all(unique_values %in% c(0, 1)) & length(unique_values)>1) {
         if (!catRIbin) {
           prompt <- paste0(
             "The regressor '", col, "' is stored as a numeric dichotomous variable.\nAs such, it could be treated as either a categorical or metric regressor.\nIf '", col, "' cannot take values than '0', '1', or 'NA', it is advisable to convert it to a categorical variable.\nOtherwise, it makes sense to keep it as numeric.\n
