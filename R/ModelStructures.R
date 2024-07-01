@@ -45,39 +45,33 @@ glm_to_compint <- function(model) {
   )
 }
 
-brms_to_compint <- function(model) {
-  original_formula <- get_original_formula(model)
-  data <- model$data
-  term_attr <- attributes(terms(model))
+#' @describeIn Changing-model-structures Transforms a brmsfit model into a CompInt model
+#' @export
+brms_to_compint <- function(x, ...) {
 
-  check_formula_validity(names(term_attr$dataClasses), data)
+  family_info <- stats::family(x)
+  term_attr <- base::attributes(stats::terms(x))
+  model_dataClasses <- term_attr$dataClasses
 
   structure(
     list(
-      model = model,
-      data = model$data,
-      catreg_list = NULL,
-      formula = original_formula,
+      model = x,
+      # model_class = insight::model_name(x), # this will be implemented later--need to match to downstream code for now
+      data = insight::get_data(x),
+      catreg_list = NA,
+      formula = insight::find_formula(x)[["conditional"]],
       type = "GLM",
       model_specification = list(
-        family = make_modfam(family(model)[[1]], family(model)[[2]]),
+        family = list(Family = family_info[["family"]], Link = family_info[["link"]]),
         regs = list(
-          categorical = intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses != "numeric")], term_attr$term.labels),
-          metric = intersect(names(term_attr$dataClasses)[which(term_attr$dataClasses == "numeric")], term_attr$term.labels),
-          interactions = list_interaction(notation = ":", term_attr = term_attr)
+          categorical = names(model_dataClasses)[model_dataClasses != "numeric"],
+          metric = names(model_dataClasses)[model_dataClasses == "numeric"],
+          interactions = insight::find_interactions(x)
         ),
-        intercept = term_attr$intercept == 1
+        intercept = insight::has_intercept(x)
       ),
-      inference = "frequentist",
-      pseudo_posterior = list(
-        args = list(coefs = coef(model), vcov = vcov(model)),
-        fun = function(model, ndraws, ...) {
-          MASS::mvrnorm(
-            n = ndraws, mu = model[["pseudo_posterior"]][["args"]][["coefs"]],
-            Sigma = model[["pseudo_posterior"]][["args"]][["vcov"]], ...
-          )
-        }
-      )
+      inference = "bayesian",
+      pseudo_posterior = list()
     ),
     class = c("CompInt_model", "from brm")
   )
@@ -140,6 +134,9 @@ model_transform <- function(model_fit, data) {
     } else {
       return(logistf_to_compint(model_fit, data))
     }
+  }
+  if("brmsfit" %in% class(model_fit)){
+   return(brms_to_compint(model_fit))
   } else {
     stop(paste0("The CompInt package does not offer automatic transform of model fits of class '", class(model_fit), "'.\n Please use the 'various_to_compint' function to manually transform this object first."))
   }
