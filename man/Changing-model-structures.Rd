@@ -2,10 +2,13 @@
 % Please edit documentation in R/ModelStructures.R
 \name{glm_to_compint}
 \alias{glm_to_compint}
+\alias{brms_to_compint}
 \alias{logistf_to_compint}
 \title{Changing-model-structures: Functions for transforming specific model objects to CompInt model objects}
 \usage{
 glm_to_compint(model)
+
+brms_to_compint(x, ...)
 
 logistf_to_compint(model, data)
 }
@@ -15,6 +18,8 @@ logistf_to_compint(model, data)
 \section{Functions}{
 \itemize{
 \item \code{glm_to_compint()}: Transforms a standard glm model into a CompInt model
+
+\item \code{brms_to_compint()}: Transforms a brmsfit model into a CompInt model
 
 \item \code{logistf_to_compint()}: Transforms a logistf model into a CompInt model
 

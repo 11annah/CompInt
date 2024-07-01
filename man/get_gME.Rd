@@ -9,7 +9,7 @@ get_gME(
   reg_of_interest = NULL,
   integration = NULL,
   seed = NULL,
-  ndraws = 1000,
+  ndraws = 10000,
   separate_interactions = FALSE,
   catRIbin = FALSE,
   ...
